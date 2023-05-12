@@ -6,7 +6,7 @@ from src.experiment.load_simple_train import train_simple
 
 if __name__ == '__main__' :
     
-    batch_size = sys.argv[2]
+    batch_size = int(sys.argv[1])
     
     os.environ['gpu'] = '0'
     
