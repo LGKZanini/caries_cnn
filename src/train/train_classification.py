@@ -92,8 +92,8 @@ class Trainer:
                 ok = True
                 continue
             
-            y_pred = np.append(y_pred, y_pred_model.detach().numpy(), axis=0)
-            y_val = np.append(y_val, y_test.detach().numpy(), axis=0) 
+            y_pred = np.append(y_pred, y_pred_model.detach().cpu().numpy(), axis=0)
+            y_val = np.append(y_val, y_test.detach().cpu().numpy(), axis=0) 
             
         
         y_val = np.argmax(y_val, axis=1)
