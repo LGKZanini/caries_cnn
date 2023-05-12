@@ -90,7 +90,11 @@ def create_cross_val(folds, fold):
 
 
 
-def make_data(fold):
+def make_folds(total_folds, perm=64):
     
+    path_data = make_paths(path_load, perm=perm)
+    folds = create_folds(path_data, fold=total_folds)
+    
+    return folds
     
 
