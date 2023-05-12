@@ -72,6 +72,9 @@ class Trainer:
         
         
         for X_test, y_test in val_data:
+            
+            X_test = X_test.to('cuda:'+str(self.device))
+            y_test = y_test.to('cuda:'+str(self.device))
                              
             y_predicted = self.model(X_test)
             
