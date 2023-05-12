@@ -33,11 +33,7 @@ class Trainer:
             
             print('Epoch', epoch+1)
             
-            self.train_model(train_data)
-            
-            #Clear memory
-            gc.collect()
-            
+            self.train_model(train_data)            
             self.validation(val_data)
             
             if epoch % 5 == 0 and epoch != 0:
@@ -69,7 +65,6 @@ class Trainer:
         y_pred = []
         loss_item = []
         ok = False
-        
         
         for X_test, y_test in val_data:
             
