@@ -34,6 +34,6 @@ def train_simple(batch_size, epochs, folds=5):
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 
-        train_cnn = Trainer(loss_fn=loss_function, optimizer=optimizer, model=model, scheduler=scheduler)
+        train_cnn = Trainer(loss_fn=loss_function, optimizer=optimizer, model=model, scheduler=scheduler, device=device)
         
         train_cnn.train_epochs(train_data=train_data, val_data=val_data, epochs=epochs)
