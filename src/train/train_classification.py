@@ -81,8 +81,8 @@ class Trainer:
             
             if ok == False:
                 
-                y_pred = y_pred_model.detach().numpy().copy()
-                y_val = y_test.detach().numpy().copy()
+                y_pred = y_pred_model.detach().cpu().numpy().copy()
+                y_val = y_test.detach().cpu().numpy().copy()
                     
                 ok = True
                 continue
