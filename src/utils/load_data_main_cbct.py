@@ -89,7 +89,6 @@ def create_cross_val(folds, fold):
     return data_train, data_val
 
 
-
 def make_folds(total_folds, perm=64):
     
     path_data = make_paths(path_load, perm=perm)
