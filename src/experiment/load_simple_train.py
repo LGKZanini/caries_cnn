@@ -20,8 +20,8 @@ def train_simple(batch_size, epochs, folds=5):
     dataset_train = ToothData(data_train)
     dataset_val = ToothData(data_val)
     
-    train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=2, shuffle=True)
-    val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=2, shuffle=True)
+    train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
+    val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
     
     cnn = models.efficientnet_b0(weights='EfficientNet_B0_Weights.DEFAULT')
     cnn.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
