@@ -19,6 +19,7 @@ class Trainer:
         y_predicted = self.model(X_train)
 
         loss = self.loss_fn(y_predicted, y_train)  
+        
         loss.backward()
         
         self.optimizer.step()
