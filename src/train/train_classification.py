@@ -7,7 +7,7 @@ from sklearn.metrics import confusion_matrix
 
 class Trainer:
 
-    def __init__(self, loss_fn, model, optimizer,, device=None):
+    def __init__(self, loss_fn, model, optimizer, device=None):
 
         self.loss_fn = loss_fn
         self.device = device
