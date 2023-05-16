@@ -33,7 +33,10 @@ class Trainer:
             
             print('Epoch', epoch+1)
             
-            self.train_model(train_data)            
+            self.train_model(train_data)
+            
+            gc.collect()
+                        
             self.validation(val_data)
             
             gc.collect()

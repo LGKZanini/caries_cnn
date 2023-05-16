@@ -27,19 +27,19 @@ class ToothData(Dataset):
     def torch_y(self, value):
         
         if value == 0:
-            return torch.tensor([1.0,0.0,0.0,0.0,0.0], dtype=torch.float)
+            return torch.tensor([1.0,0.0,0.0,0.0,0.0])
             
         if value == 1:
-            return torch.tensor([0.0,1.0,0.0,0.0,0.0], dtype=torch.float)
+            return torch.tensor([0.0,1.0,0.0,0.0,0.0])
             
         if value == 2:
-            return torch.tensor([0.0,0.0,1.0,0.0,0.0], dtype=torch.float)
+            return torch.tensor([0.0,0.0,1.0,0.0,0.0])
             
         if value == 3:
-            return torch.tensor([0.0,0.0,0.0,1.0,0.0], dtype=torch.float)
+            return torch.tensor([0.0,0.0,0.0,1.0,0.0])
             
         if value == 4:
-            return torch.tensor([0.0,0.0,0.0,0.0,1.0], dtype=torch.float)
+            return torch.tensor([0.0,0.0,0.0,0.0,1.0])
         
     
     def __getitem__(self, index):
