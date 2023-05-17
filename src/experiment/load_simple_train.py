@@ -38,7 +38,7 @@ def train_simple(batch_size, epochs, folds=5):
     
     model = train_cnn.model
     
-    torch.save(model.state_dict(), './src/models_train/cnn_'+str(1)+'.pth')
+    torch.save(model.state_dict(), './src/models/cnn_'+str(1)+'.pth')
     
     del model
     
