@@ -7,12 +7,13 @@ from sklearn.metrics import confusion_matrix
 
 class Trainer:
 
-    def __init__(self, loss_fn, model, optimizer, device=None):
+    def __init__(self, loss_fn, model, optimizer, scheduler, device=None):
 
         self.loss_fn = loss_fn
         self.device = device
         self.model = model
         self.optimizer = optimizer
+        self.scheduler = scheduler
 
     def train_fn(self, X_train, y_train):
 
@@ -34,15 +35,10 @@ class Trainer:
             print('Epoch', epoch+1)
             
             self.train_model(train_data)
-            
-            gc.collect()
-                        
             self.validation(val_data)
             
-            gc.collect()
-            
-            #if epoch % 5 == 0 and epoch != 0:
-            #    self.scheduler.step()
+            if epoch % 5 == 0 and epoch != 0:
+                self.scheduler.step()
             
     def train_model(self, train_data):
         
