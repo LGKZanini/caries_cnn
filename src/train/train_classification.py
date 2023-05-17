@@ -37,6 +37,8 @@ class Trainer:
             self.train_model(train_data)
             self.validation(val_data)
             
+            torch.cuda.empty_cache()
+            
             #if epoch % 5 == 0 and epoch != 0:
             #    self.scheduler.step()
             
