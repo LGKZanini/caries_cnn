@@ -37,8 +37,8 @@ class Trainer:
             self.train_model(train_data)
             self.validation(val_data)
             
-            if epoch % 5 == 0 and epoch != 0:
-                self.scheduler.step()
+            #if epoch % 5 == 0 and epoch != 0:
+            #    self.scheduler.step()
             
     def train_model(self, train_data):
         
