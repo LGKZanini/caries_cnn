@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 
-path_load = './data/aug/result.npy'
+path_load = './data/result.npy'
 
 def make_paths(path, perm):
     
@@ -24,11 +24,11 @@ def make_paths(path, perm):
 
         for s in range(slices):
             
-            paths[labels[0][s]].append('./data/aug/dente_'+key+'_slice_'+str(s)+'.npy')
+            paths[labels[0][s]].append('./data/dente_'+key+'_slice_'+str(s)+'.npy')
         
             for p in range(perm):
                 
-                paths[labels[0][s]].append('./data/aug/dente_'+key+'_slice_'+str(s)+'_permutation_'+str(p)+'.npy')
+                paths[labels[0][s]].append('./data/dente_'+key+'_slice_'+str(s)+'_permutation_'+str(p)+'.npy')
     
     return paths
 
