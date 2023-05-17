@@ -12,7 +12,7 @@ if __name__ == '__main__' :
     
     os.environ['gpu'] = device
     
-    torch.cuda.set_device(device)
+    torch.cuda.set_device(int(device))
     
     train_simple(epochs=50, batch_size=batch_size, folds=5)
     
