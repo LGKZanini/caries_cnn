@@ -55,6 +55,9 @@ class Trainer:
                 print(loss)
             
             i += 1
+            
+            
+        return
     
     def calculate_confusion_matrix(self, y_val, y_pred):
 
@@ -126,3 +129,5 @@ class Trainer:
             'Recall 3' : recall[3],
             'Recall 4' : recall[4],
         })
+        
+        return
