@@ -1,36 +1,23 @@
 import os
-import wandb # pyright: ignore[reportMissingImports]
 import torch # pyright: ignore[reportMissingImports]
 
 from torch import nn # pyright: ignore[reportMissingImports]
 from torchvision import models # pyright: ignore[reportMissingImports]
 from torch.utils.data import DataLoader # pyright: ignore[reportMissingImports]
-
+ 
 from src.models.cnn_simple import CNN_simple
 from src.loader.tooth_data import ToothData
 from src.train.train_classification import Trainer
 from src.utils.load_data_main_cbct import make_folds, create_cross_val
 
-def train_simple(batch_size, epochs, folds=5):
+def train_ssl(batch_size, epochs, folds=5):
     
-    data_folds = make_folds(total_folds=folds)
+    #data_folds = make_folds(total_folds=folds) --> preciso mudar
     device = os.getenv('gpu')    
-    
-    wandb.init(
-        project="caries_cnn_simple",
-        notes="first_experimental",
-    )
-    
-    wandb.config = {
-        "epochs": epochs, 
-        "learning_rate_init": 0.001, 
-        "batch_size": batch_size
-    }
-    
-    data_train, data_val = create_cross_val(data_folds, fold=20)
 
-    dataset_train = ToothData(data_train)
-    dataset_val = ToothData(data_val)
+
+    #dataset_train = ToothData(data_train) --> preciso mudar
+    #dataset_val = ToothData(data_val) --> preciso mudar
     
     train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
     val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
@@ -42,14 +29,15 @@ def train_simple(batch_size, epochs, folds=5):
     loss_function = nn.CrossEntropyLoss()
     
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
+    #scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 
-    train_cnn = Trainer(loss_fn=loss_function, optimizer=optimizer, model=model, scheduler=scheduler, device=device)
+    train_cnn = Trainer(loss_fn=loss_function, optimizer=optimizer, model=model, scheduler=None, device=device)
+    
     train_cnn.train_epochs(train_data=train_data, val_data=val_data, epochs=epochs)
     
     model = train_cnn.model
     
-    torch.save(model.state_dict(), './src/models/cnn_'+str(1)+'.pth')
+    torch.save(model.state_dict(), './src/models/cnn_ssl_'+str(1)+'.pth')
     
     del model
     

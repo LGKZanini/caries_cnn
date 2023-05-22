@@ -1,9 +1,9 @@
-import gc
-import torch
-import numpy as np
-import torchvision.transforms as T
+import wandb # pyright: ignore[reportMissingImports]
+import torch # pyright: ignore[reportMissingImports]
+import numpy as np 
+import torchvision.transforms as T # pyright: ignore[reportMissingImports]
 
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix # pyright: ignore[reportMissingImports]
 
 class Trainer:
 
@@ -39,8 +39,8 @@ class Trainer:
             
             torch.cuda.empty_cache()
             
-            #if epoch % 5 == 0 and epoch != 0:
-            #    self.scheduler.step()
+            if epoch % 5 == 0 and epoch != 0:
+                self.scheduler.step()
             
     def train_model(self, train_data):
         
@@ -112,7 +112,7 @@ class Trainer:
         precision = TP/(TP+FP) 
         acc = sum(np.diag(conf)) / conf.sum()
 
-        print({
+        wandb.log({
             "Loss_val" : sum(loss_item) / len(loss_item),
             "Accuracy" : acc,
             'Precision 0' : precision[0],
