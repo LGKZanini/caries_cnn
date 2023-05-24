@@ -1,5 +1,5 @@
-from torch import nn
-from torch.nn import functional as F
+from torch import nn # pyright: ignore[reportMissingImports]
+from torch.nn import functional as F # pyright: ignore[reportMissingImports]
 
 class CNN_simple(nn.Module):
 

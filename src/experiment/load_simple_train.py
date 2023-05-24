@@ -13,8 +13,10 @@ from src.utils.load_data_main_cbct import make_folds, create_cross_val
 
 def train_simple(batch_size, epochs, folds=5):
     
-    data_folds = make_folds(total_folds=folds)
     device = os.getenv('gpu')    
+    api_key = os.getenv('WANDB_API_KEY')
+    
+    wandb.login(key=api_key)
     
     wandb.init(
         project="caries_cnn_simple",
@@ -22,12 +24,13 @@ def train_simple(batch_size, epochs, folds=5):
     )
     
     wandb.config = {
-        "epochs": epochs, 
+        "epochs": epochs,
+        "batch_size": batch_size,
         "learning_rate_init": 0.001, 
-        "batch_size": batch_size
     }
     
-    data_train, data_val = create_cross_val(data_folds, fold=20)
+    data_folds = make_folds(total_folds=folds)
+    data_train, data_val = create_cross_val(data_folds, fold=1)
 
     dataset_train = ToothData(data_train)
     dataset_val = ToothData(data_val)

@@ -58,7 +58,6 @@ class Trainer:
             
             i += 1
             
-            
         return
     
     def calculate_confusion_matrix(self, y_val, y_pred):

@@ -1,9 +1,8 @@
-import sys
 import os
 import numpy as np
 
-
 path_load = './data/result.npy'
+
 
 def make_paths(path, perm):
     
@@ -89,11 +88,37 @@ def create_cross_val(folds, fold):
     return data_train, data_val
 
 
-def make_folds(total_folds, perm=64):
+def make_folds(total_folds, perm=64, ssl=False):
     
-    path_data = make_paths(path_load, perm=perm)
-    folds = create_folds(path_data, fold=total_folds)
+    if ssl:
+        
+        path_data = make_path_ssl()
+        folds = create_folds(path_data, fold=total_folds)
+        
+    else:
     
+        path_data = make_paths(path_load, perm=perm)
+        folds = create_folds(path_data, fold=total_folds)
+        
     return folds
     
 
+def make_path_ssl():
+    
+    path_load_ssl = './data/ssl/'
+    
+    labels_dict = np.load(path_load_ssl+'result_ssl.npy', allow_pickle=True)
+    paths_result = []
+    
+    for key in labels_dict.any().keys():
+        
+        actual_path = path_load_ssl+key
+        
+        paths = os.listdir(path_load_ssl+key)
+    
+        for path in paths:
+            
+            paths_result.append(actual_path+'/'+path)
+            
+            
+    return paths_result
