@@ -49,12 +49,12 @@ def train_simple(batch_size, epochs, folds=5):
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 
     train_cnn = Trainer(
-        loss_fn=loss_function, 
-        optimizer=optimizer, 
-        model=model, 
         get_metrics=metrics_caries_icdas, 
+        loss_fn=loss_function,
         scheduler=scheduler, 
-        device=device
+        optimizer=optimizer,
+        device=device, 
+        model=model,  
     )
     
     train_cnn.train_epochs(train_data=train_data, val_data=val_data, epochs=epochs)
