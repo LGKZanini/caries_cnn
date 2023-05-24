@@ -3,7 +3,6 @@ import numpy as np
 
 path_load = './data/result.npy'
 
-
 def make_paths(path, perm):
     
     labels_dict = np.load(path, allow_pickle=True)
@@ -119,6 +118,5 @@ def make_path_ssl():
         for path in paths:
             
             paths_result.append(actual_path+'/'+path)
-            
             
     return paths_result

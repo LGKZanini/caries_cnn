@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader # pyright: ignore[reportMissingImports]
 from src.models.cnn_simple import CNN_simple
 from src.loader.tooth_data import ToothData
 from src.train.train_classification import Trainer
+from src.train.validation_classification import metrics_caries_icdas
 from src.utils.load_data_main_cbct import make_folds, create_cross_val
 
 def train_simple(batch_size, epochs, folds=5):
@@ -47,7 +48,15 @@ def train_simple(batch_size, epochs, folds=5):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 
-    train_cnn = Trainer(loss_fn=loss_function, optimizer=optimizer, model=model, scheduler=scheduler, device=device)
+    train_cnn = Trainer(
+        loss_fn=loss_function, 
+        optimizer=optimizer, 
+        model=model, 
+        get_metrics=metrics_caries_icdas, 
+        scheduler=scheduler, 
+        device=device
+    )
+    
     train_cnn.train_epochs(train_data=train_data, val_data=val_data, epochs=epochs)
     
     model = train_cnn.model
