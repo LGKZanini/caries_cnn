@@ -13,6 +13,6 @@ if __name__ == '__main__' :
     
     os.environ['gpu'] = device
     
-    train_simple(epochs=epochs, batch_size=batch_size, folds=5)
+    train_simple(epochs=epochs, batch_size=batch_size, folds=3)
     
     
