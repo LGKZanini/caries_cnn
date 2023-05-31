@@ -8,3 +8,6 @@ docker_local_gpu_0:
 
 docker_server_gpu_0:
 	sudo docker run --gpus 1 -v /home/luizzanini/data/aug/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 16 40 0
+
+docker_server_gpu_0:
+	sudo docker run --gpus all -v /home/luizzanini/data/aug/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 16 40 1
