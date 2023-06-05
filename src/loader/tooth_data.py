@@ -6,6 +6,7 @@ import numpy as np
 from torchvision.io import read_image # pyright: ignore[reportMissingImports]
 from torch.utils.data import Dataset # pyright: ignore[reportMissingImports]
 from scipy.ndimage import rotate # pyright: ignore[reportMissingImports]
+from PIL import Image
 
 class ToothData(Dataset):
     
@@ -94,7 +95,8 @@ class ToothDataRotate(Dataset):
         
         choose_angle = random.randint(0, 3)
         
-        x = read_image(self.data[index])
-        x = rotate(x, angle=self.angle[choose_angle])
-
+        img = Image.open(self.data[index])
+        x = rotate(img, angle=self.angle[choose_angle])
+        print(x.shape)
+        
         return self.transform(x), self.torch_y(choose_angle)
