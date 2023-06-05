@@ -12,7 +12,7 @@ if __name__ == '__main__' :
     batch_size = int(sys.argv[1])
     epochs = int(sys.argv[2])
     device = sys.argv[3]
-    experiment = sys.argv[3]
+    experiment = sys.argv[4]
     
     os.environ['gpu'] = device
     
