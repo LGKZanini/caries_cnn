@@ -1,5 +1,7 @@
 import os
 import torch # pyright: ignore[reportMissingImports]
+import wandb# pyright: ignore[reportMissingImports]
+
 
 from torch import nn # pyright: ignore[reportMissingImports]
 from torchvision import models # pyright: ignore[reportMissingImports]
@@ -16,11 +18,26 @@ def train_ssl(batch_size, epochs):
     
     data_folds = make_path_ssl()
     idx_total = len(data_folds)
-    
+
     data_train = data_folds[ : int(0.8*idx_total)]
     data_val = data_folds[int(0.8*idx_total) : idx_total]
     
-    device = os.getenv('gpu')    
+    device = os.getenv('gpu')
+    api_key = os.getenv('WANDB_API_KEY')    
+
+    wandb.login(key=api_key)
+    
+    wandb.init(
+        project="caries_cnn_simple",
+        notes="first_experimental",
+        name='SSL_Rotate'
+    )
+    
+    wandb.config = {
+        "epochs": epochs,
+        "batch_size": batch_size,
+        "learning_rate_init": 0.001, 
+    }
 
     dataset_train = ToothDataRotate(data_train) 
     dataset_val = ToothDataRotate(data_val)
