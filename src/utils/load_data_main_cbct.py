@@ -104,7 +104,7 @@ def make_folds(total_folds, perm=64, ssl=False):
 
 def make_path_ssl():
     
-    path_load_ssl = './data/ssl/'
+    path_load_ssl = './data/'
     paths_result = []
 
     for dire in os.listdir(path_load_ssl):
