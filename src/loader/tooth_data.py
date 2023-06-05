@@ -3,6 +3,7 @@ import torch # pyright: ignore[reportMissingImports]
 import torchvision.transforms as T # pyright: ignore[reportMissingImports]
 import numpy as np
 
+from torchvision.io import read_image # pyright: ignore[reportMissingImports]
 from torch.utils.data import Dataset # pyright: ignore[reportMissingImports]
 from scipy.ndimage import rotate # pyright: ignore[reportMissingImports]
 
@@ -63,9 +64,10 @@ class ToothDataRotate(Dataset):
         self.angle = [0, 90, 180, 270]
         
         self.transform = T.Compose([
+            T.ToPILImage(),
             T.ToTensor(),
             T.Resize(shape_size, T.InterpolationMode.BILINEAR, antialias=True),
-            lambda x: x/4096
+            lambda x: x/255
         ])
             
     def __len__(self):
@@ -90,9 +92,9 @@ class ToothDataRotate(Dataset):
     
     def __getitem__(self, index):
         
-        choose_angle = random.randint(0, 9)
+        choose_angle = random.randint(0, 3)
         
-        x = np.load(self.data[index])
+        x = read_image(self.data[index])
         x = rotate(x, angle=self.angle[choose_angle])
 
         return self.transform(x), self.torch_y(choose_angle)

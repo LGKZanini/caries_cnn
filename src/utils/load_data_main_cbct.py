@@ -105,15 +105,13 @@ def make_folds(total_folds, perm=64, ssl=False):
 def make_path_ssl():
     
     path_load_ssl = './data/ssl/'
-    
-    labels_dict = np.load(path_load_ssl+'result_ssl.npy', allow_pickle=True)
     paths_result = []
-    
-    for key in labels_dict.any().keys():
+
+    for dire in os.listdir(path_load_ssl):
         
-        actual_path = path_load_ssl+key
-        
-        paths = os.listdir(path_load_ssl+key)
+        actual_path = path_load_ssl+dire
+
+        paths = os.listdir(actual_path)
     
         for path in paths:
             

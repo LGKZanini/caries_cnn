@@ -51,7 +51,5 @@ def train_ssl(batch_size, epochs):
     model = train_cnn.model
     
     torch.save(model.state_dict(), './src/models/cnn_ssl_'+str(1)+'.pth')
-    
-    del model
-    
+
     return
