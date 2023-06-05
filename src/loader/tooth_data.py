@@ -97,6 +97,5 @@ class ToothDataRotate(Dataset):
         
         img = Image.open(self.data[index])
         x = rotate(img, angle=self.angle[choose_angle])
-        print(x.shape)
-        
+
         return self.transform(x), self.torch_y(choose_angle)
