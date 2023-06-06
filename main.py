@@ -1,7 +1,6 @@
 import os
 import sys
-import numpy as np 
-import torch # pyright: ignore[reportMissingImports]
+import numpy as np # pyright: ignore[reportMissingImports]
 
 from src.experiment.load_simple_train import train_simple
 

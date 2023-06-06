@@ -69,7 +69,7 @@ def train_ssl(batch_size, epochs):
     
     torch.save(model.state_dict(), './src/models/cnn_ssl_'+str(1)+'.pth')
 
-    artifact = wandb.Artifact('model', type='model_rotate')
+    artifact = wandb.Artifact('model', type='model')
     artifact.add_file('./src/models/cnn_ssl_'+str(1)+'.pth')
     run.log_artifact(artifact)
     run.finish()

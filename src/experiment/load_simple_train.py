@@ -12,14 +12,16 @@ from src.train.train_classification import Trainer
 from src.train.validation_classification import metrics_caries_icdas
 from src.utils.load_data_main_cbct import make_folds, create_cross_val
 
-def train_simple(batch_size, epochs, folds=5):
+def train_simple(batch_size, epochs, folds=5, model=False):
     
+    path_load_cnn = './src/models/cnn_ssl_1.pth'
+
     device = os.getenv('gpu')    
     api_key = os.getenv('WANDB_API_KEY')
     
     wandb.login(key=api_key)
     
-    wandb.init(
+    run = wandb.init(
         project="caries_cnn_simple",
         notes="first_experimental",
     )
@@ -41,8 +43,23 @@ def train_simple(batch_size, epochs, folds=5):
     
     cnn = models.efficientnet_b0(weights='EfficientNet_B0_Weights.DEFAULT')
     cnn.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
-    model = CNN_simple(cnn, num_classes=5).to('cuda:'+str(device))
     
+    if not model :
+
+        model = CNN_simple(cnn, num_classes=5).to('cuda:'+str(device))
+        
+    else:
+        model = CNN_simple(cnn, num_classes=4).to('cuda:'+str(device))
+
+        artifact = run.use_artifact('luizzanini/caries_cnn_simple/model:v0', type='model')
+        artifact_dir = artifact.download()
+
+        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
+
+        model.linear2 = nn.Linear(2000, 5)
+
+
+
     loss_function = nn.CrossEntropyLoss()
     
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
@@ -62,7 +79,5 @@ def train_simple(batch_size, epochs, folds=5):
     model = train_cnn.model
     
     torch.save(model.state_dict(), './src/models/cnn_'+str(1)+'.pth')
-    
-    del model
     
     return
