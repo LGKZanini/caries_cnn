@@ -27,7 +27,7 @@ def train_ssl(batch_size, epochs):
 
     wandb.login(key=api_key)
     
-    wandb.init(
+    run = wandb.init(
         project="caries_cnn_simple",
         notes="first_experimental",
         name='SSL_Rotate'
@@ -69,4 +69,9 @@ def train_ssl(batch_size, epochs):
     
     torch.save(model.state_dict(), './src/models/cnn_ssl_'+str(1)+'.pth')
 
+    artifact = wandb.Artifact('model', type='model')
+    artifact.add_file('./src/models/cnn_ssl_'+str(1)+'.pth')
+    run.log_artifact(artifact)
+    run.finish()
+    
     return
