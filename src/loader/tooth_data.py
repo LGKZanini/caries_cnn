@@ -150,16 +150,16 @@ class ToothDataJigsaw(Dataset):
             return torch.tensor([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0], requires_grad=False)
 
 
-    def get_idx(self, resize_to=224 ):
+    def get_idx(self, resize_y=224, resize_x=224):
         
         idx_y = [0,
-                (resize_to // 3),
-                (int(2 * resize_to) // 3),
-                resize_to]
+                (resize_y // 3),
+                (int(2 * resize_y) // 3),
+                resize_y]
         idx_x = [0,
-                (resize_to // 3),
-                (int(2 * resize_to) // 3),
-                resize_to]
+                (resize_x // 3),
+                (int(2 * resize_x) // 3),
+                resize_x]
 
         return [
             [idx_y[0], idx_y[1], idx_x[0], idx_x[1]], # upper left
@@ -180,7 +180,9 @@ class ToothDataJigsaw(Dataset):
         choose_jig = random.randint(0, 8)
         
         img = np.array(Image.open(self.data[index]))
-        idx = self.get_idx()[choose_jig]
+        y, x = img.shape
+
+        idx = self.get_idx(y, x)[choose_jig]
 
         img_jig = img[ idx[0]:idx[1], idx[2]:idx[3]]
 
