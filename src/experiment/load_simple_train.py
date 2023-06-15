@@ -13,24 +13,23 @@ from src.train.validation_classification import metrics_caries_icdas
 from src.utils.load_data_main_cbct import make_folds, create_cross_val
 
 def train_simple(batch_size, epochs, folds=5, model=False):
-    
-    path_load_cnn = './src/models/cnn_ssl_1.pth'
 
     device = os.getenv('gpu')    
     api_key = os.getenv('WANDB_API_KEY')
     
     wandb.login(key=api_key)
     
+
     run = wandb.init(
         project="caries_cnn_simple",
         notes="first_experimental",
+        config = { 
+            "folds": folds,
+            "epochs": epochs,
+            "batch_size": batch_size,
+            "learning_rate_init": 0.001,
+        }
     )
-    
-    wandb.config = {
-        "epochs": epochs,
-        "batch_size": batch_size,
-        "learning_rate_init": 0.001, 
-    }
     
     data_folds = make_folds(total_folds=folds)
     data_train, data_val = create_cross_val(data_folds, fold=1)
