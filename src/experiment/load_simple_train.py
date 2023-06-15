@@ -53,11 +53,13 @@ def train_simple(batch_size, epochs, folds=5, model=False):
         artifact = run.use_artifact('luizzanini/caries_cnn_simple/model:v1', type='model')
         artifact_dir = artifact.download()
 
-        model = CNN_simple(cnn, num_classes=4).to('cuda:'+str(device))
+        model = CNN_simple(cnn, num_classes=4)
 
         model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
 
         model.linear2 = nn.Linear(2000, 5)
+
+        model = model.to('cuda:'+str(device))
 
 
 
