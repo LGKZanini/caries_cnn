@@ -110,7 +110,6 @@ class ToothDataJigsaw(Dataset):
         self.angle = [0, 90, 180, 270]
         
         self.transform = T.Compose([
-            T.ToPILImage(),
             T.ToTensor(),
             T.Resize(shape_size, T.InterpolationMode.BILINEAR, antialias=True),
             lambda x: x/255
@@ -180,7 +179,7 @@ class ToothDataJigsaw(Dataset):
         
         choose_jig = random.randint(0, 8)
         
-        img = Image.open(self.data[index])
+        img = np.array(Image.open(self.data[index]))
         idx = self.get_idx()[choose_jig]
 
         img_jig = img[ idx[0]:idx[1], idx[2]:idx[3], :]
