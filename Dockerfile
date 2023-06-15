@@ -14,6 +14,6 @@ RUN cd /home/luiz/app/ && pip3 install -r requirements.txt
 
 COPY --chown=luiz . /home/luiz/app/
 
-RUN chown -R luiz:luiz .
+RUN chown -R luiz:luiz /home/luiz/app/
 
 WORKDIR /home/luiz/app
