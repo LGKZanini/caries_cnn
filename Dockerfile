@@ -2,7 +2,7 @@ FROM nvidia/cuda:11.6.0-cudnn8-runtime-ubuntu20.04
 
 RUN apt-get update && apt-get install -y python3 python3-pip sudo
 
-RUN useradd -m luiz
+RUN useradd -ms /bin/bash luiz
 
 RUN chown -R luiz:luiz /home/luiz/
 
