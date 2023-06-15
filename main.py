@@ -12,11 +12,18 @@ if __name__ == '__main__' :
     epochs = int(sys.argv[2])
     device = sys.argv[3]
     experiment = sys.argv[4]
+    type_train = sys.argv[5]
     
     os.environ['gpu'] = device
     
     if experiment == 'cnn':
-        train_simple(epochs=epochs, batch_size=batch_size, folds=4)
+
+        if type_train == 'true':
+
+            train_simple(epochs=epochs, batch_size=batch_size, folds=4, model=True)
+
+        else:
+            train_simple(epochs=epochs, batch_size=batch_size, folds=4)
     
     if experiment == 'ssl':
         train_ssl(epochs=epochs, batch_size=batch_size)

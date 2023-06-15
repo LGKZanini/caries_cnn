@@ -12,5 +12,8 @@ docker_server_gpu_0:
 docker_server_gpu_1:
 	sudo docker run --gpus all -v /home/luizzanini/data/aug/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 40 1 cnn
 
+docker_server_gpu_1_ssl:
+	sudo docker run --gpus all -v /home/luizzanini/data/aug/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 40 1 cnn true
+
 docker_server_ssl_0:
 	sudo docker run --gpus all -v /home/luizzanini/data/ssl/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 0 ssl
