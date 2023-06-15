@@ -183,6 +183,6 @@ class ToothDataJigsaw(Dataset):
         img = Image.open(self.data[index])
         idx = self.get_idx()[choose_jig]
 
-        img_jig = img[ idx[0]:idx[1], idx[2]:idx[3] ]
+        img_jig = img[ idx[0]:idx[1], idx[2]:idx[3], :]
 
         return self.transform(img_jig), self.torch_y(choose_jig)
