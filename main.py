@@ -25,6 +25,8 @@ if __name__ == '__main__' :
         else:
             train_simple(epochs=epochs, batch_size=batch_size, folds=4)
     
-    if experiment == 'ssl':
+    if experiment == 'rotate':
         train_ssl(epochs=epochs, batch_size=batch_size)
     
+    if experiment == 'jigsaw':
+        train_ssl(epochs=epochs, batch_size=batch_size, jigsaw=True)

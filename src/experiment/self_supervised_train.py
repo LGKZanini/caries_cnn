@@ -8,13 +8,13 @@ from torchvision import models # pyright: ignore[reportMissingImports]
 from torch.utils.data import DataLoader # pyright: ignore[reportMissingImports]
  
 from src.models.cnn_simple import CNN_simple
-from src.loader.tooth_data import ToothDataRotate
+from src.loader.tooth_data import ToothDataRotate, ToothDataJigsaw
 from src.train.train_classification import Trainer
-from src.train.validation_classification import metrics_caries_ssl_rotate
+from src.train.validation_classification import metrics_caries_rotate, metrics_caries_jigsaw
 from src.utils.load_data_main_cbct import make_path_ssl
 
 
-def train_ssl(batch_size, epochs):
+def train_ssl(batch_size, epochs, jigsaw=False):
     
     data_folds = make_path_ssl()
     idx_total = len(data_folds)
@@ -30,38 +30,65 @@ def train_ssl(batch_size, epochs):
     run = wandb.init(
         project="caries_cnn_simple",
         notes="first_experimental",
-        name='SSL_Rotate'
+        name='SSL_Rotate',
+        config = {
+            "epochs": epochs,
+            "batch_size": batch_size,
+            "learning_rate_init": 0.001, 
+        }
     )
-    
-    wandb.config = {
-        "epochs": epochs,
-        "batch_size": batch_size,
-        "learning_rate_init": 0.001, 
-    }
 
-    dataset_train = ToothDataRotate(data_train) 
-    dataset_val = ToothDataRotate(data_val)
-    
+    if jigsaw:
+        
+        dataset_train = ToothDataJigsaw(data_train) 
+        dataset_val = ToothDataJigsaw(data_val)
+
+    else:
+
+        dataset_train = ToothDataRotate(data_train) 
+        dataset_val = ToothDataRotate(data_val)
+        
     train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
     val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
     
     cnn = models.efficientnet_b0(weights='EfficientNet_B0_Weights.DEFAULT')
     cnn.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
-    model = CNN_simple(cnn, num_classes=4).to('cuda:'+str(device))
-    
+
+    if jigsaw:
+
+        model = CNN_simple(cnn, num_classes=4).to('cuda:'+str(device))
+    else:
+
+        model = CNN_simple(cnn, num_classes=9).to('cuda:'+str(device))
+
     loss_function = nn.CrossEntropyLoss()
     
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 
-    train_cnn = Trainer(
-        get_metrics=metrics_caries_ssl_rotate,
-        loss_fn=loss_function, 
-        optimizer=optimizer, 
-        scheduler=scheduler,
-        device=device,
-        model=model,   
-    )
+
+    if jigsaw:
+
+        train_cnn = Trainer(
+            get_metrics=metrics_caries_rotate,
+            loss_fn=loss_function, 
+            optimizer=optimizer, 
+            scheduler=scheduler,
+            device=device,
+            model=model,   
+        )
+    
+    else:
+
+        train_cnn = Trainer(
+            get_metrics=metrics_caries_jigsaw,
+            loss_fn=loss_function, 
+            optimizer=optimizer, 
+            scheduler=scheduler,
+            device=device,
+            model=model,   
+        )
+
     
     train_cnn.train_epochs(train_data=train_data, val_data=val_data, epochs=epochs)
     
