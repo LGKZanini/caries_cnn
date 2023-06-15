@@ -124,16 +124,31 @@ class ToothDataJigsaw(Dataset):
     def torch_y(self, value):
         
         if value == 0:
-            return torch.tensor([1.0,0.0,0.0,0.0], requires_grad=False)
+            return torch.tensor([1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], requires_grad=False)
             
         if value == 1:
-            return torch.tensor([0.0,1.0,0.0,0.0], requires_grad=False)
+            return torch.tensor([0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], requires_grad=False)
             
         if value == 2:
-            return torch.tensor([0.0,0.0,1.0,0.0], requires_grad=False)
+            return torch.tensor([0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0], requires_grad=False)
             
         if value == 3:
-            return torch.tensor([0.0,0.0,0.0,1.0], requires_grad=False)
+            return torch.tensor([0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0], requires_grad=False)
+
+        if value == 4:
+            return torch.tensor([0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0], requires_grad=False)
+            
+        if value == 5:
+            return torch.tensor([0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0], requires_grad=False)
+            
+        if value == 6:
+            return torch.tensor([0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0], requires_grad=False)
+            
+        if value == 7:
+            return torch.tensor([0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0], requires_grad=False)
+
+        if value == 8:
+            return torch.tensor([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0], requires_grad=False)
 
 
     def get_idx(self, resize_to=224 ):
@@ -163,11 +178,11 @@ class ToothDataJigsaw(Dataset):
     
     def __getitem__(self, index):
         
-        choose_angle = random.randint(0, 3)
+        choose_jig = random.randint(0, 8)
         
         img = Image.open(self.data[index])
-        idx = self.get_idx()
+        idx = self.get_idx()[choose_jig]
 
-        img = img[ idx[0]:idx[1], idx[2]:idx[3] , :]
+        img_jig = img[ idx[0]:idx[1], idx[2]:idx[3] ]
 
-        return self.transform(img), self.torch_y(choose_angle)
+        return self.transform(img_jig), self.torch_y(choose_jig)
