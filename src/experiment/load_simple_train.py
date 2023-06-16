@@ -23,6 +23,7 @@ def train_simple(batch_size, epochs, folds=5, model=False):
     run = wandb.init(
         project="caries_cnn_simple",
         notes="first_experimental",
+        name='classify_with_ssl_jigsaw',
         config = { 
             "folds": folds,
             "epochs": epochs,
@@ -49,10 +50,10 @@ def train_simple(batch_size, epochs, folds=5, model=False):
         
     else:
 
-        artifact = run.use_artifact('luizzanini/caries_cnn_simple/model:v1', type='model')
+        artifact = run.use_artifact('luizzanini/caries_cnn_simple/model:v2', type='model')
         artifact_dir = artifact.download()
 
-        model = CNN_simple(cnn, num_classes=4)
+        model = CNN_simple(cnn, num_classes=9)
 
         model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
 
