@@ -18,15 +18,14 @@ if __name__ == '__main__' :
     
     if experiment == 'cnn':
 
-        if type_train == 'true':
+        if type_train == 'simple':
 
-            train_simple(epochs=epochs, batch_size=batch_size, folds=4, model=True)
+            train_simple(epochs=epochs, batch_size=batch_size, folds=4)
 
         else:
-            train_simple(epochs=epochs, batch_size=batch_size, folds=4)
+            train_simple(epochs=epochs, batch_size=batch_size, folds=4, classify_type=type_train)
+
+    else:
+
+        train_ssl(epochs=epochs, batch_size=batch_size, type_ssl=experiment)
     
-    if experiment == 'rotate':
-        train_ssl(epochs=epochs, batch_size=batch_size)
-    
-    if experiment == 'jigsaw':
-        train_ssl(epochs=epochs, batch_size=batch_size, jigsaw=True)

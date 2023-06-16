@@ -12,7 +12,35 @@ from src.train.train_classification import Trainer
 from src.train.validation_classification import metrics_caries_icdas
 from src.utils.load_data_main_cbct import make_folds, create_cross_val
 
-def train_simple(batch_size, epochs, folds=5, model=False):
+
+def model_ssl(classify_type, cnn, run, device):
+
+
+    if classify_type == 'rotate':
+        
+        artifact = run.use_artifact('luizzanini/caries_cnn_simple/model:v1', type='model')
+        artifact_dir = artifact.download()
+
+        model = CNN_simple(cnn, num_classes=9)
+
+        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
+
+    
+    else :
+
+        artifact = run.use_artifact('luizzanini/caries_cnn_simple/model:v2', type='model')
+        artifact_dir = artifact.download()
+
+        model = CNN_simple(cnn, num_classes=4)
+
+        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
+
+
+    model.linear2 = nn.Linear(2000, 5)
+
+    return model.to('cuda:'+str(device))
+
+def train_simple(batch_size, epochs, folds=5, classify_type=None):
 
     device = os.getenv('gpu')    
     api_key = os.getenv('WANDB_API_KEY')
@@ -44,29 +72,19 @@ def train_simple(batch_size, epochs, folds=5, model=False):
     cnn = models.efficientnet_b0(weights='EfficientNet_B0_Weights.DEFAULT')
     cnn.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
     
-    if not model :
+    if classify_type is None :
 
         model = CNN_simple(cnn, num_classes=5).to('cuda:'+str(device))
         
     else:
 
-        artifact = run.use_artifact('luizzanini/caries_cnn_simple/model:v2', type='model')
-        artifact_dir = artifact.download()
-
-        model = CNN_simple(cnn, num_classes=9)
-
-        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
-
-        model.linear2 = nn.Linear(2000, 5)
-
-        model = model.to('cuda:'+str(device))
-
+        model = model_ssl(classify_type, cnn, run, device)
 
 
     loss_function = nn.CrossEntropyLoss()
     
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
 
     train_cnn = Trainer(
         get_metrics=metrics_caries_icdas, 
@@ -81,6 +99,11 @@ def train_simple(batch_size, epochs, folds=5, model=False):
     
     model = train_cnn.model
     
-    torch.save(model.state_dict(), './src/models/cnn_'+str(1)+'.pth')
+    torch.save(model.state_dict(), './src/models/cnn_ssl_'+str(1)+'.pth')
+
+    artifact = wandb.Artifact('classify_'+str(classify_type), type='model')
+    artifact.add_file('./src/models/cnn_ssl_'+str(1)+'.pth')
+    run.log_artifact(artifact)
+    run.finish()
     
     return

@@ -1,7 +1,7 @@
 import random
 import torch # pyright: ignore[reportMissingImports]
 import torchvision.transforms as T # pyright: ignore[reportMissingImports]
-import numpy as np
+import numpy as np # pyright: ignore[reportMissingImports]
 
 from torchvision.io import read_image # pyright: ignore[reportMissingImports]
 from torch.utils.data import Dataset # pyright: ignore[reportMissingImports]
@@ -30,20 +30,10 @@ class ToothData(Dataset):
     
     def torch_y(self, value):
         
-        if value == 0:
-            return torch.tensor([1.0,0.0,0.0,0.0,0.0], requires_grad=False)
-            
-        if value == 1:
-            return torch.tensor([0.0,1.0,0.0,0.0,0.0], requires_grad=False)
-            
-        if value == 2:
-            return torch.tensor([0.0,0.0,1.0,0.0,0.0], requires_grad=False)
-            
-        if value == 3:
-            return torch.tensor([0.0,0.0,0.0,1.0,0.0], requires_grad=False)
-            
-        if value == 4:
-            return torch.tensor([0.0,0.0,0.0,0.0,1.0], requires_grad=False)
+        array = [ 0.0 for i in range(5)]
+        array[value] = 1.0
+
+        return torch.tensor(array, requires_grad=False)
         
     
     def __getitem__(self, index):
@@ -78,17 +68,10 @@ class ToothDataRotate(Dataset):
     
     def torch_y(self, value):
         
-        if value == 0:
-            return torch.tensor([1.0,0.0,0.0,0.0], requires_grad=False)
-            
-        if value == 1:
-            return torch.tensor([0.0,1.0,0.0,0.0], requires_grad=False)
-            
-        if value == 2:
-            return torch.tensor([0.0,0.0,1.0,0.0], requires_grad=False)
-            
-        if value == 3:
-            return torch.tensor([0.0,0.0,0.0,1.0], requires_grad=False)
+        array = [ 0.0 for i in range(4)]
+        array[value] = 1.0
+
+        return torch.tensor(array, requires_grad=False)
         
     
     def __getitem__(self, index):
@@ -122,32 +105,10 @@ class ToothDataJigsaw(Dataset):
     
     def torch_y(self, value):
         
-        if value == 0:
-            return torch.tensor([1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], requires_grad=False)
-            
-        if value == 1:
-            return torch.tensor([0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], requires_grad=False)
-            
-        if value == 2:
-            return torch.tensor([0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0], requires_grad=False)
-            
-        if value == 3:
-            return torch.tensor([0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0], requires_grad=False)
+        array = [ 0.0 for i in range(9)]
+        array[value] = 1.0
 
-        if value == 4:
-            return torch.tensor([0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0], requires_grad=False)
-            
-        if value == 5:
-            return torch.tensor([0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0], requires_grad=False)
-            
-        if value == 6:
-            return torch.tensor([0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0], requires_grad=False)
-            
-        if value == 7:
-            return torch.tensor([0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0], requires_grad=False)
-
-        if value == 8:
-            return torch.tensor([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0], requires_grad=False)
+        return torch.tensor(array, requires_grad=False)
 
 
     def get_idx(self, resize_y=224, resize_x=224):

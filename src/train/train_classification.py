@@ -1,7 +1,5 @@
-import wandb # pyright: ignore[reportMissingImports]
 import torch # pyright: ignore[reportMissingImports]
-import numpy as np 
-import torchvision.transforms as T # pyright: ignore[reportMissingImports]
+import numpy as np # pyright: ignore[reportMissingImports]
 
 from sklearn.metrics import confusion_matrix # pyright: ignore[reportMissingImports]
 

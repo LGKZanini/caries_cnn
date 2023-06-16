@@ -1,5 +1,5 @@
 import os
-import numpy as np
+import numpy as np  # pyright: ignore[reportMissingImports]
 
 path_load = './data/result.npy'
 

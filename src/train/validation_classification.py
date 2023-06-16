@@ -1,8 +1,7 @@
-import numpy as np
+import numpy as np  # pyright: ignore[reportMissingImports]
 import wandb # pyright: ignore[reportMissingImports]
 
 from sklearn.metrics import confusion_matrix # pyright: ignore[reportMissingImports]
-
     
 def metrics_caries_icdas( y_val, y_pred, loss_item):
     
