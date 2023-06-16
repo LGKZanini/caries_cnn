@@ -56,10 +56,10 @@ def train_ssl(batch_size, epochs, jigsaw=False):
 
     if jigsaw:
 
-        model = CNN_simple(cnn, num_classes=4).to('cuda:'+str(device))
+        model = CNN_simple(cnn, num_classes=9).to('cuda:'+str(device))
     else:
 
-        model = CNN_simple(cnn, num_classes=9).to('cuda:'+str(device))
+        model = CNN_simple(cnn, num_classes=4).to('cuda:'+str(device))
 
     loss_function = nn.CrossEntropyLoss()
     
@@ -70,7 +70,7 @@ def train_ssl(batch_size, epochs, jigsaw=False):
     if jigsaw:
 
         train_cnn = Trainer(
-            get_metrics=metrics_caries_rotate,
+            get_metrics=metrics_caries_jigsaw,
             loss_fn=loss_function, 
             optimizer=optimizer, 
             scheduler=scheduler,
@@ -81,7 +81,7 @@ def train_ssl(batch_size, epochs, jigsaw=False):
     else:
 
         train_cnn = Trainer(
-            get_metrics=metrics_caries_jigsaw,
+            get_metrics=metrics_caries_rotate,
             loss_fn=loss_function, 
             optimizer=optimizer, 
             scheduler=scheduler,
