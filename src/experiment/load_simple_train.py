@@ -18,7 +18,7 @@ def model_ssl(classify_type, cnn, run, device):
 
     if classify_type == 'rotate':
         
-        artifact = run.use_artifact('luizzanini/caries_cnn_simple/model:v1', type='model')
+        artifact = run.use_artifact('luizzanini/caries_cnn_simple/rotate:v0', type='model')
         artifact_dir = artifact.download()
 
         model = CNN_simple(cnn, num_classes=9)
@@ -28,7 +28,7 @@ def model_ssl(classify_type, cnn, run, device):
     
     else :
 
-        artifact = run.use_artifact('luizzanini/caries_cnn_simple/model:v2', type='model')
+        artifact = run.use_artifact('luizzanini/caries_cnn_simple/jigsaw:v0', type='model')
         artifact_dir = artifact.download()
 
         model = CNN_simple(cnn, num_classes=4)
