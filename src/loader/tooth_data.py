@@ -29,10 +29,12 @@ class ToothData(Dataset):
     
     
     def torch_y(self, value):
+        print(value)
         
         array = [ 0.0 for i in range(5)]
         array[value] = 1.0
 
+        print(array)
         return torch.tensor(array, requires_grad=False)
         
     
