@@ -51,7 +51,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None):
     run = wandb.init(
         project="caries_cnn_simple",
         notes="first_experimental",
-        name='classify_with_ssl_jigsaw',
+        name='classify'+str(classify_type),
         config = { 
             "folds": folds,
             "epochs": epochs,
