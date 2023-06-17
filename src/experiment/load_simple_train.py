@@ -21,7 +21,7 @@ def model_ssl(classify_type, cnn, run, device):
         artifact = run.use_artifact('luizzanini/caries_cnn_simple/rotate:v0', type='model')
         artifact_dir = artifact.download()
 
-        model = CNN_simple(cnn, num_classes=9)
+        model = CNN_simple(cnn, num_classes=4)
 
         model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
 
@@ -31,7 +31,7 @@ def model_ssl(classify_type, cnn, run, device):
         artifact = run.use_artifact('luizzanini/caries_cnn_simple/jigsaw:v0', type='model')
         artifact_dir = artifact.download()
 
-        model = CNN_simple(cnn, num_classes=4)
+        model = CNN_simple(cnn, num_classes=9)
 
         model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
 
