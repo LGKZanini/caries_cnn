@@ -5,16 +5,9 @@ from sklearn.metrics import confusion_matrix # pyright: ignore[reportMissingImpo
     
 def metrics_caries_icdas( y_val, y_pred, loss_item):
     
-
-    print(y_val)
-    print(y_pred)
-    
     y_val = np.argmax(y_val, axis=1)
     y_pred = np.argmax(y_pred, axis=1)
 
-    print(y_val)
-    print(y_pred)
-    
     conf = confusion_matrix(y_val, y_pred, labels=[0,1,2,3,4])
     
     FP = conf.sum(axis=0) - np.diag(conf)  
