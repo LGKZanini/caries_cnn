@@ -20,7 +20,7 @@ class ToothData(Dataset):
         self.transform = T.Compose([
             T.ToTensor(),
             T.Resize(shape_size, T.InterpolationMode.BILINEAR, antialias=True),
-            lambda x: x/4096
+            lambda x: x/255
         ])
             
     def __len__(self):
