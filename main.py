@@ -14,7 +14,9 @@ if __name__ == '__main__' :
     experiment = sys.argv[4]
     type_train = sys.argv[5]
     backbone = sys.argv[5]
-    
+            
+    print(experiment)
+
     os.environ['gpu'] = device
     
     if experiment == 'cnn':
