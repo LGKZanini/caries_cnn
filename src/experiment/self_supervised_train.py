@@ -135,7 +135,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
 
     dataloader = torch.utils.data.DataLoader(
         dataset,
-        batch_size=32,
+        batch_size=8,
         shuffle=True,
         drop_last=True,
         num_workers=2,
