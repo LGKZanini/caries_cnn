@@ -103,11 +103,11 @@ def get_model(metrics, cnn, num_classes, learning_rate, device):
 
 def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
     
-    backbone_nn = models.resnet50(weights=models.ResNet50_Weights.DEFAULT).to('cuda:'+str(device))
+    backbone_nn = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
 
     if type_ssl == 'byol':
 
-        model = BYOL(backbone_nn)
+        model = BYOL(backbone_nn).to('cuda:'+str(device))
         criterion = NegativeCosineSimilarity()
 
         transform = BYOLTransform(
@@ -118,13 +118,13 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
 
     elif type_ssl == 'vicreg':
 
-        model = VICReg(backbone_nn)
+        model = VICReg(backbone_nn).to('cuda:'+str(device))
         criterion = VICRegLoss()
         transform = VICRegTransform(input_size=224, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]})
 
     else:
 
-        model = SimCLR(backbone_nn)
+        model = SimCLR(backbone_nn).to('cuda:'+str(device))
         criterion = NTXentLoss()
         transform = SimCLRTransform(input_size=224, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]})
 
@@ -160,9 +160,9 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
 
                 update_momentum(model.backbone, model.backbone_momentum, m=momentum_val)
 
-                update_momentum(
-                    model.projection_head, model.projection_head_momentum, m=momentum_val
-                )
+                update_momentum( model.projection_head, model.projection_head_momentum, m=momentum_val )
+
+
                 x0 = x0.to('cuda:'+str(device))
                 x1 = x1.to('cuda:'+str(device))
 
@@ -173,6 +173,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
                 loss = 0.5 * (criterion(p0, z1) + criterion(p1, z0))
                 total_loss += loss.detach()
                 loss.backward()
+
                 optimizer.step()
                 optimizer.zero_grad()
 
