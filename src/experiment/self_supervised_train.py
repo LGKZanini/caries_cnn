@@ -144,7 +144,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
     )
     
     optimizer_adam = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    optimizer = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=10, gamma=0.5)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=10, gamma=0.5)
 
     if type_ssl == 'byol':
 
@@ -175,8 +175,10 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
                 total_loss += loss.detach()
                 loss.backward()
 
-                optimizer.step()
-                optimizer.zero_grad()
+                optimizer_adam.step()
+                optimizer_adam.zero_grad()
+
+            scheduler.step()
 
             avg_loss = total_loss / len(dataloader)
             print(f"epoch: {epoch:>02}, loss: {avg_loss:.5f}")
