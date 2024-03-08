@@ -103,7 +103,8 @@ def get_model(metrics, cnn, num_classes, learning_rate, device):
 
 def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
     
-    backbone_nn = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+    nn = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+    backbone_nn = nn.Sequential(*list(nn.children())[:-1])
 
     if type_ssl == 'byol':
 
