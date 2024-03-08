@@ -229,7 +229,7 @@ def train_model(data_train, data_val, train_cnn, epochs, run, type_ssl):
     run.finish()
 
 
-def train_ssl(batch_size, epochs, type_ssl='rotate', backbone=None):
+def train_ssl(batch_size, epochs, type_ssl, backbone=None):
     
     run = configure_setup(epochs, batch_size, type_ssl)
     device = os.getenv('gpu')

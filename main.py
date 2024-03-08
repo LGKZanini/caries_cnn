@@ -28,6 +28,8 @@ if __name__ == '__main__' :
             train_simple(epochs=epochs, batch_size=batch_size, folds=4, classify_type=type_train)
 
     else:
+        
+        print(experiment)
 
         train_ssl(epochs=epochs, batch_size=batch_size, type_ssl=experiment, backbone=backbone)
     
