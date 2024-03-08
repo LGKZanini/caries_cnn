@@ -135,10 +135,11 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
 
     dataloader = torch.utils.data.DataLoader(
         dataset,
-        batch_size=64,
+        batch_size=32,
         shuffle=True,
         drop_last=True,
-        num_workers=8,
+        num_workers=2,
+        pin_memory=True,
     )
     
     optimizer_adam = torch.optim.Adam(model.parameters(), lr=learning_rate)
@@ -164,7 +165,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
                 )
                 x0 = x0.to('cuda:'+str(device))
                 x1 = x1.to('cuda:'+str(device))
-                
+
                 p0 = model(x0)
                 z0 = model.forward_momentum(x0)
                 p1 = model(x1)
