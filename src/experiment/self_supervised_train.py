@@ -129,7 +129,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
         transform = SimCLRTransform(input_size=224, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]})
 
 
-    folder = './data/ssl_ligthy/'
+    folder = './data/'
 
     dataset = LightlyDataset(folder, transform=transform)
 
