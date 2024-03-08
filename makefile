@@ -34,10 +34,10 @@ experiment_jigsaw_1:
 	sudo docker run --gpus all -v /home/luizzanini/data/ssl/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 1 jigsaw simple
 
 experiment_byol_0:
-	sudo docker run --gpus all -v /home/luizzanini/data/ssl/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 0 byol simple resnet50
+	sudo docker run --gpus all -v /home/luizzanini/data/ssl_lighty/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 0 byol simple resnet50
 
 experiment_simclr_0:
-	sudo docker run --gpus all -v /home/luizzanini/data/ssl/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 0 simclr simple resnet50
+	sudo docker run --gpus all -v /home/luizzanini/data/ssl_lighty/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 0 simclr simple resnet50
 
 experiment_vicreg_0:
-	sudo docker run --gpus all -v /home/luizzanini/data/ssl/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 0 vicreg simple resnet50
+	sudo docker run --gpus all -v /home/luizzanini/data/ssl_lighty/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 0 vicreg simple resnet50
