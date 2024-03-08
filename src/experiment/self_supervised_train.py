@@ -103,7 +103,7 @@ def get_model(metrics, cnn, num_classes, learning_rate, device):
 
 def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
     
-    backbone_nn = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+    backbone_nn = models.resnet50(weights=models.ResNet50_Weights.DEFAULT).to('cuda:'+str(device))
 
     if type_ssl == 'byol':
 
@@ -111,8 +111,8 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
         criterion = NegativeCosineSimilarity()
 
         transform = BYOLTransform(
-            view_1_transform=BYOLView1Transform(input_size=32, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]} ),
-            view_2_transform=BYOLView2Transform(input_size=32, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]} ),
+            view_1_transform=BYOLView1Transform(input_size=224, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]} ),
+            view_2_transform=BYOLView2Transform(input_size=224, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]} ),
         )
         
 
@@ -162,8 +162,9 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
                 update_momentum(
                     model.projection_head, model.projection_head_momentum, m=momentum_val
                 )
-                x0 = x0.to(device)
-                x1 = x1.to(device)
+                x0 = x0.to('cuda:'+str(device))
+                x1 = x1.to('cuda:'+str(device))
+                
                 p0 = model(x0)
                 z0 = model.forward_momentum(x0)
                 p1 = model(x1)
