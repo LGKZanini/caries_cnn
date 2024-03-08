@@ -59,10 +59,6 @@ class Trainer:
             
         return
     
-    def calculate_confusion_matrix(self, y_val, y_pred):
-        
-        return confusion_matrix(y_val, y_pred, labels=[0, 1, 2, 3, 4])
-    
     def validation(self, val_data):
         
         y_val = []

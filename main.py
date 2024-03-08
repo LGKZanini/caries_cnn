@@ -13,6 +13,7 @@ if __name__ == '__main__' :
     device = sys.argv[3]
     experiment = sys.argv[4]
     type_train = sys.argv[5]
+    backbone = sys.argv[5]
     
     os.environ['gpu'] = device
     
@@ -28,5 +29,5 @@ if __name__ == '__main__' :
 
     else:
 
-        train_ssl(epochs=epochs, batch_size=batch_size, type_ssl=experiment)
+        train_ssl(epochs=epochs, batch_size=batch_size, type_ssl=experiment, backbone=backbone)
     

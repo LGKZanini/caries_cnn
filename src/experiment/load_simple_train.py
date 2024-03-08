@@ -20,9 +20,37 @@ def model_ssl(classify_type, cnn, run, device):
         
         artifact = run.use_artifact('luizzanini/caries_cnn_simple/rotate:v0', type='model')
         artifact_dir = artifact.download()
-
+        
+        #mudar aqui
         model = CNN_simple(cnn, num_classes=4)
+        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
 
+    if classify_type == 'simclr':
+        
+        artifact = run.use_artifact('luizzanini/caries_cnn_simple/simclr:v0', type='model')
+        artifact_dir = artifact.download()
+
+        #mudar aqui 
+        model = CNN_simple(cnn, num_classes=4)
+        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
+
+
+    if classify_type == 'byol':
+        
+        artifact = run.use_artifact('luizzanini/caries_cnn_simple/byol:v0', type='model')
+        artifact_dir = artifact.download()
+
+        #mudar aqui
+        model = CNN_simple(cnn, num_classes=4)
+        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
+
+    if classify_type == 'VICReg':
+        
+        artifact = run.use_artifact('luizzanini/caries_cnn_simple/VICReg:v0', type='model')
+        artifact_dir = artifact.download()
+
+        #mudar aqui
+        model = CNN_simple(cnn, num_classes=4)
         model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
 
     
@@ -32,7 +60,6 @@ def model_ssl(classify_type, cnn, run, device):
         artifact_dir = artifact.download()
 
         model = CNN_simple(cnn, num_classes=9)
-
         model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
 
 
