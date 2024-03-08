@@ -157,8 +157,6 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
 
                 x0, x1 = batch[0]
 
-                print(x0.shape)
-
                 update_momentum(model.backbone, model.backbone_momentum, m=momentum_val)
 
                 update_momentum( model.projection_head, model.projection_head_momentum, m=momentum_val )
@@ -183,7 +181,6 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
             avg_loss = total_loss / len(dataloader)
             print(f"epoch: {epoch:>02}, loss: {avg_loss:.5f}")
 
-
     else:
             
         for epoch in range(epochs):
@@ -203,8 +200,10 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
                 total_loss += loss.detach()
 
                 loss.backward()
-                optimizer.step()
-                optimizer.zero_grad()
+                optimizer_adam.step()
+                optimizer_adam.zero_grad()
+
+            scheduler.step()
 
             avg_loss = total_loss / len(dataloader)
 
