@@ -111,9 +111,8 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
         criterion = NegativeCosineSimilarity()
 
         transform = BYOLTransform(
-            view_1_transform=BYOLView1Transform(input_size=32, gaussian_blur=0.0),
-            view_2_transform=BYOLView2Transform(input_size=32, gaussian_blur=0.0),
-            normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]}
+            view_1_transform=BYOLView1Transform(input_size=32, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]} ),
+            view_2_transform=BYOLView2Transform(input_size=32, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]} ),
         )
         
 
