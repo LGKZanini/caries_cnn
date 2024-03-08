@@ -11,11 +11,9 @@ if __name__ == '__main__' :
     batch_size = int(sys.argv[1])
     epochs = int(sys.argv[2])
     device = sys.argv[3]
-    experiment = sys.argv[4]
+    experiment = str(sys.argv[4])
     type_train = sys.argv[5]
-    backbone = sys.argv[5]
-            
-    print(experiment)
+    backbone = sys.argv[6]
 
     os.environ['gpu'] = device
     
@@ -30,8 +28,6 @@ if __name__ == '__main__' :
             train_simple(epochs=epochs, batch_size=batch_size, folds=4, classify_type=type_train)
 
     else:
-        
-        print(experiment)
 
         train_ssl(epochs=epochs, batch_size=batch_size, type_ssl=experiment, backbone=backbone)
     

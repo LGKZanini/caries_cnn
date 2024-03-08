@@ -113,6 +113,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
         transform = BYOLTransform(
             view_1_transform=BYOLView1Transform(input_size=32, gaussian_blur=0.0),
             view_2_transform=BYOLView2Transform(input_size=32, gaussian_blur=0.0),
+            normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]}
         )
         
 
@@ -120,18 +121,18 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
 
         model = VICReg(backbone_nn)
         criterion = VICRegLoss()
-        transform = VICRegTransform(input_size=224)
+        transform = VICRegTransform(input_size=224, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]})
 
     else:
 
         model = SimCLR(backbone_nn)
         criterion = NTXentLoss()
-        transform = SimCLRTransform(input_size=224, gaussian_blur=0.0)
+        transform = SimCLRTransform(input_size=224, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]})
 
 
     folder = './data/ssl_ligthy/'
 
-    dataset = LightlyDataset(folder, transform=transform, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]})
+    dataset = LightlyDataset(folder, transform=transform)
 
     dataloader = torch.utils.data.DataLoader(
         dataset,
