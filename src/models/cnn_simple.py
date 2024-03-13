@@ -34,7 +34,7 @@ def create_model(backbone, device):
         resnet18_conv = nn.Sequential(*list(resnet18.children())[:-1]).to('cuda:'+str(device))
 
 
-        return CNN_simple(cnn=resnet18_conv, input_nn=512 , num_classes=5)
+        return CNN_simple(cnn=resnet18_conv, input_nn=512 , num_classes=5).to('cuda:'+str(device))
 
     
     if backbone == 'resnet50':
@@ -43,7 +43,7 @@ def create_model(backbone, device):
         resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         resnet50_conv = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
 
-        return CNN_simple(cnn=resnet50_conv, input_nn=2048 , num_classes=5)
+        return CNN_simple(cnn=resnet50_conv, input_nn=2048 , num_classes=5).to('cuda:'+str(device))
     
     else:
 

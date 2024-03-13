@@ -10,7 +10,7 @@ from src.models.cnn_simple import CNN_simple, create_model
 from src.loader.tooth_data import ToothData
 from src.train.train_classification import Trainer
 from src.train.validation_classification import metrics_caries_icdas
-from src.utils.load_data_main_cbct import make_folds, create_train_test
+from src.utils.load_data_main_cbct import create_train_test
 
 
 def model_ssl(classify_type, cnn, run, device):
