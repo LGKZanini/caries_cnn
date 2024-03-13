@@ -36,7 +36,7 @@ class ToothData(Dataset):
     def __getitem__(self, index):
         
         x = np.load(self.data[index][0])
-        y = self.data[index][1]
+        y = int(self.data[index][1])
         
         return self.transform(x), self.torch_y(y)
     
