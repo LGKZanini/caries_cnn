@@ -95,11 +95,9 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
     val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
     
-
-    
     if classify_type is None :
 
-        model = create_model(backbone).to('cuda:'+str(device))
+        model = create_model(backbone, device)
         
     else:
 
