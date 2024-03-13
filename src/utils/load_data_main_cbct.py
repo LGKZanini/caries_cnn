@@ -104,7 +104,7 @@ def make_folds(total_folds, perm=64, ssl=False):
 
 def create_train_test():
 
-    path_load = './data/cbct_DL/'
+    path_load = './data/'
 
     train = np.load(path_load+'train.py', allow_pickle=True)
     test = np.load(path_load+'test.py', allow_pickle=True)
