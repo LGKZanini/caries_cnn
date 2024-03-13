@@ -10,7 +10,7 @@ class CNN_simple(nn.Module):
         self.cnn = cnn
         self.dp = nn.Dropout(p=dp)
         
-        self.linear1 = nn.Linear(input_nn, input_nn*2)
+        self.linear1 = nn.Linear(input_nn, input_nn // 2)
         self.relu = nn.ReLU()        
         self.linear2 = nn.Linear(input_nn // 2, num_classes)
         
@@ -46,7 +46,6 @@ def create_model(backbone):
         return CNN_simple(cnn=resnet50_conv, input_nn=2048 , num_classes=5)
     
     else:
-
 
         densenet121 = models.densenet121(pretrained=True)
         densenet121.features.conv0 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
