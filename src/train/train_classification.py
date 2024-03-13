@@ -38,8 +38,7 @@ class Trainer:
             
             torch.cuda.empty_cache()
             
-            if epoch % 5 == 0 and epoch != 0:
-                self.scheduler.step()
+            self.scheduler.step()
             
     def train_model(self, train_data):
         

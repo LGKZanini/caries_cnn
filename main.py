@@ -21,7 +21,7 @@ if __name__ == '__main__' :
 
         if type_train == 'simple':
 
-            train_simple(epochs=epochs, batch_size=batch_size, folds=4)
+            train_simple(epochs=epochs, batch_size=batch_size, folds=4, backbone=backbone)
 
         else:
             

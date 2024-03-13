@@ -6,16 +6,16 @@ from torch import nn # pyright: ignore[reportMissingImports]
 from torchvision import models # pyright: ignore[reportMissingImports]
 from torch.utils.data import DataLoader # pyright: ignore[reportMissingImports]
 
-from src.models.cnn_simple import CNN_simple
+from src.models.cnn_simple import CNN_simple, create_model
 from src.loader.tooth_data import ToothData
 from src.train.train_classification import Trainer
 from src.train.validation_classification import metrics_caries_icdas
-from src.utils.load_data_main_cbct import make_folds, create_cross_val
+from src.utils.load_data_main_cbct import make_folds, create_train_test
 
 
 def model_ssl(classify_type, cnn, run, device):
 
-
+    # preciso mudar dps
     if classify_type == 'rotate':
         
         artifact = run.use_artifact('luizzanini/caries_cnn_simple/rotate:v0', type='model')
@@ -67,7 +67,7 @@ def model_ssl(classify_type, cnn, run, device):
 
     return model.to('cuda:'+str(device))
 
-def train_simple(batch_size, epochs, folds=5, classify_type=None):
+def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resnet18'):
 
     device = os.getenv('gpu')    
     api_key = os.getenv('WANDB_API_KEY')
@@ -87,23 +87,25 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None):
         }
     )
     
-    data_folds = make_folds(total_folds=folds)
-    data_train, data_val = create_cross_val(data_folds, fold=1)
+    data_train, data_test = create_train_test()
 
     dataset_train = ToothData(data_train)
-    dataset_val = ToothData(data_val)
+    dataset_val = ToothData(data_test)
     
     train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
     val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
     
-    cnn = models.efficientnet_b0()
-    cnn.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+
     
     if classify_type is None :
 
-        model = CNN_simple(cnn, num_classes=5).to('cuda:'+str(device))
+        model = create_model(backbone).to('cuda:'+str(device))
         
     else:
+
+        #preicos mudar dps
+        cnn = models.efficientnet_b0()
+        cnn.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
 
         model = model_ssl(classify_type, cnn, run, device)
 

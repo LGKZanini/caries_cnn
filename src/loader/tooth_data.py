@@ -10,7 +10,7 @@ from PIL import Image
 
 class ToothData(Dataset):
     
-    def __init__(self, path, shape_size=(224,224)):
+    def __init__(self, path):
         
         super(Dataset, self).__init__()
         
@@ -19,8 +19,6 @@ class ToothData(Dataset):
         
         self.transform = T.Compose([
             T.ToTensor(),
-            T.Resize(shape_size, T.InterpolationMode.BILINEAR, antialias=True),
-            lambda x: x/255
         ])
             
     def __len__(self):
@@ -58,7 +56,6 @@ class ToothDataRotate(Dataset):
             T.ToPILImage(),
             T.ToTensor(),
             T.Resize(shape_size, T.InterpolationMode.BILINEAR, antialias=True),
-            lambda x: x/255
         ])
             
     def __len__(self):
@@ -95,7 +92,6 @@ class ToothDataJigsaw(Dataset):
         self.transform = T.Compose([
             T.ToTensor(),
             T.Resize(shape_size, T.InterpolationMode.BILINEAR, antialias=True),
-            lambda x: x/255
         ])
             
     def __len__(self):

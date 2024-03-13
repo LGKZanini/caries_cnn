@@ -61,9 +61,11 @@ class BYOL(nn.Module):
         deactivate_requires_grad(self.projection_head_momentum)
 
     def forward(self, x):
+        
         y = self.backbone(x).flatten(start_dim=1)
         z = self.projection_head(y)
         p = self.prediction_head(z)
+
         return p
 
     def forward_momentum(self, x):

@@ -60,7 +60,7 @@ def create_folds(path_data, fold):
                 
                 data.append([path, i])            
         
-        folds.append(data)
+        folds.append(data) 
             
     return folds
 
@@ -101,6 +101,16 @@ def make_folds(total_folds, perm=64, ssl=False):
         
     return folds
     
+
+def create_train_test():
+
+    path_load = './data/cbct_DL/'
+
+    train = np.load(path_load+'train.py', allow_pickle=True)
+    test = np.load(path_load+'test.py', allow_pickle=True)
+
+    return train, test
+
 
 def make_path_ssl():
     

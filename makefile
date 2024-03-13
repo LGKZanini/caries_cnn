@@ -4,10 +4,10 @@ docker_build:
 	sudo docker build -f Dockerfile -t caries-cnn:train .
 
 experiment_classify_0:
-	sudo docker run --gpus 1 -v /home/luizzanini/data/aug_v3/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 0 cnn simple
+	sudo docker run --gpus all -v /home/luizzanini/data/aug_v3/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 64 100 0 cnn simple resnet18
 
 experiment_classify_1:
-	sudo docker run --gpus all -v /home/luizzanini/data/aug_v3/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 1 cnn simple
+	sudo docker run --gpus all -v /home/luizzanini/data/aug_v3/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 64 100 1 cnn simple resnet50
 
 experiment_classify_rotate_0:
 	sudo docker run --gpus all -v /home/luizzanini/data/aug_v3/:/home/luiz/app/data --env-file .env -ti caries-cnn:train python3 main.py 32 100 0 cnn rotate
