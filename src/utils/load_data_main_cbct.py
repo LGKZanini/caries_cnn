@@ -106,8 +106,8 @@ def create_train_test():
 
     path_load = './data/'
 
-    train = np.load(path_load+'train.py', allow_pickle=True)
-    test = np.load(path_load+'test.py', allow_pickle=True)
+    train = np.load(path_load+'train.npy', allow_pickle=True)
+    test = np.load(path_load+'test.npy', allow_pickle=True)
 
     return train, test
 
