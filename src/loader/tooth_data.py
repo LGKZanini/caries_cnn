@@ -15,7 +15,6 @@ class ToothData(Dataset):
         super(Dataset, self).__init__()
         
         self.data = path
-        self.shape_size = shape_size
         
         self.transform = T.Compose([
             T.ToTensor(),
@@ -49,13 +48,11 @@ class ToothDataRotate(Dataset):
         super(Dataset, self).__init__()
         
         self.data = path
-        self.shape_size = shape_size
         self.angle = [0, 90, 180, 270]
         
         self.transform = T.Compose([
             T.ToPILImage(),
             T.ToTensor(),
-            T.Resize(shape_size, T.InterpolationMode.BILINEAR, antialias=True),
         ])
             
     def __len__(self):
@@ -86,7 +83,6 @@ class ToothDataJigsaw(Dataset):
         super(Dataset, self).__init__()
         
         self.data = path
-        self.shape_size = shape_size
         self.angle = [0, 90, 180, 270]
         
         self.transform = T.Compose([
