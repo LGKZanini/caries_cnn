@@ -38,7 +38,7 @@ class ToothData(Dataset):
         x = np.load(self.data[index][0])
         y = int(self.data[index][1])
         
-        return self.transform(x), self.torch_y(y)
+        return self.transform(x).float(), self.torch_y(y).float()
     
     
 class ToothDataRotate(Dataset):
