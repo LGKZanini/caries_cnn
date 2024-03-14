@@ -83,7 +83,8 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
             "folds": folds,
             "epochs": epochs,
             "batch_size": batch_size,
-            "learning_rate_init": 0.001,
+            "learning_rate_init": 0.01,
+            "backbone":backbone,
         }
     )
     
