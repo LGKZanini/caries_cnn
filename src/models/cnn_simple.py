@@ -33,7 +33,6 @@ def create_model(backbone, device):
         resnet18.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         resnet18_conv = nn.Sequential(*list(resnet18.children())[:-1]).to('cuda:'+str(device))
 
-
         return CNN_simple(cnn=resnet18_conv, input_nn=512 , num_classes=5).to('cuda:'+str(device))
 
     
@@ -49,17 +48,19 @@ def create_model(backbone, device):
 
         densenet121 = models.densenet121(pretrained=True)
         densenet121.features.conv0 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-        densenet121_conv = densenet121.features.to('cuda:'+str(device))
-
-        return CNN_simple(cnn=densenet121_conv,input_nn=9216 , num_classes=5).to('cuda:'+str(device))
+        densenet121_conv = densenet121.features
+        densenet121_conv.add_module('global_average_pooling', nn.AdaptiveAvgPool2d((1, 1)))
+        
+        return CNN_simple(cnn=densenet121_conv,input_nn=1024 , num_classes=5).to('cuda:'+str(device))
     
     else:
 
         vgg19 = models.vgg19(pretrained=True)
-        vgg19.features[0] = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
+        vgg19.features[0] = nn.Conv2d(1, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
         vgg19_backbone = vgg19.features
+        vgg19_backbone.add_module('global_average_pooling', nn.AdaptiveAvgPool2d((1, 1)))
 
-        return CNN_simple(cnn=vgg19_backbone, input_nn=4608, num_classes=5).to('cuda:'+str(device))
+        return CNN_simple(cnn=vgg19_backbone, input_nn=512, num_classes=5).to('cuda:'+str(device))
 
     
     # Implementar dps if backbone == 'VGG19':
