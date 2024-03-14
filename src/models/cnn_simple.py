@@ -37,21 +37,29 @@ def create_model(backbone, device):
         return CNN_simple(cnn=resnet18_conv, input_nn=512 , num_classes=5).to('cuda:'+str(device))
 
     
-    if backbone == 'resnet50':
+    elif backbone == 'resnet50':
         
         resnet50 = models.resnet50(pretrained=True)
         resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         resnet50_conv = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
 
         return CNN_simple(cnn=resnet50_conv, input_nn=2048 , num_classes=5).to('cuda:'+str(device))
-    
-    else:
+
+    elif backbone == 'densenet121':
 
         densenet121 = models.densenet121(pretrained=True)
         densenet121.features.conv0 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         densenet121_conv = densenet121.features.to('cuda:'+str(device))
 
         return CNN_simple(cnn=densenet121_conv,input_nn=9126 , num_classes=5).to('cuda:'+str(device))
+    
+    else:
+
+        vgg19 = models.vgg19(pretrained=True)
+        vgg19.features[0] = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
+        vgg19_backbone = vgg19.features
+
+        return CNN_simple(cnn=vgg19_backbone, input_nn=4608, num_classes=5).to('cuda:'+str(device))
 
     
     # Implementar dps if backbone == 'VGG19':
