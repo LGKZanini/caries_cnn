@@ -51,7 +51,7 @@ def create_model(backbone, device):
         densenet121.features.conv0 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         densenet121_conv = densenet121.features.to('cuda:'+str(device))
 
-        return CNN_simple(cnn=densenet121_conv,input_nn=9126 , num_classes=5).to('cuda:'+str(device))
+        return CNN_simple(cnn=densenet121_conv,input_nn=9216 , num_classes=5).to('cuda:'+str(device))
     
     else:
 
