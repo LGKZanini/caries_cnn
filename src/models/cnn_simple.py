@@ -29,7 +29,7 @@ def create_model(backbone, device):
 
     if backbone == 'resnet18':
 
-        resnet18 = models.resnet18(pretrained=False)
+        resnet18 = models.resnet18(pretrained=True)
         resnet18.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         resnet18_conv = nn.Sequential(*list(resnet18.children())[:-1]).to('cuda:'+str(device))
 
@@ -39,7 +39,7 @@ def create_model(backbone, device):
     
     if backbone == 'resnet50':
         
-        resnet50 = models.resnet50(pretrained=False)
+        resnet50 = models.resnet50(pretrained=True)
         resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         resnet50_conv = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
 
@@ -47,7 +47,7 @@ def create_model(backbone, device):
     
     else:
 
-        densenet121 = models.densenet121(pretrained=False)
+        densenet121 = models.densenet121(pretrained=True)
         densenet121.features.conv0 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         densenet121_conv = densenet121.features.to('cuda:'+str(device))
 
