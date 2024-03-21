@@ -43,7 +43,7 @@ class ToothData(Dataset):
     
 class ToothDataRotate(Dataset):
     
-    def __init__(self, path, shape_size=(112,112)):
+    def __init__(self, path):
         
         super(Dataset, self).__init__()
         
@@ -97,7 +97,7 @@ class ToothDataSSL(Dataset):
         x = np.load(self.data[index])
         x = torch.from_numpy(x)
 
-        return self.transform(x).float()
+        return self.transform(x).float(), index
 
 class ToothDataJigsaw(Dataset):
     
