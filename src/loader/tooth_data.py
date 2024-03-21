@@ -95,6 +95,7 @@ class ToothDataSSL(Dataset):
     def __getitem__(self, index):
         
         x = np.load(self.data[index])
+        x = torch.from_numpy(x)
 
         return self.transform(x).float()
 
