@@ -43,7 +43,7 @@ class ToothData(Dataset):
     
 class ToothDataRotate(Dataset):
     
-    def __init__(self, path, shape_size=(224,224)):
+    def __init__(self, path, shape_size=(112,112)):
         
         super(Dataset, self).__init__()
         
@@ -76,6 +76,29 @@ class ToothDataRotate(Dataset):
         x = rotate(img, angle=self.angle[choose_angle])
 
         return self.transform(x), self.torch_y(choose_angle)
+
+
+class ToothDataSSL(Dataset):
+    
+    def __init__(self, path, transform):
+        
+        super(Dataset, self).__init__()
+        
+        self.data = path+'/save.npy'
+
+        self.transform = transform
+            
+    def __len__(self):
+        
+        return len(self.data)
+        
+    
+    def __getitem__(self, index):
+        
+        x = np.load(self.data[index])
+
+        return self.transform(x).float()
+
 class ToothDataJigsaw(Dataset):
     
     def __init__(self, path, shape_size=(224,224)):

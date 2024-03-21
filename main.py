@@ -7,13 +7,14 @@ from src.experiment.load_simple_train import train_simple
 from src.experiment.self_supervised_train import train_ssl
 
 if __name__ == '__main__' :
-    
-    batch_size = int(sys.argv[1])
-    epochs = int(sys.argv[2])
-    device = sys.argv[3]
-    experiment = str(sys.argv[4])
-    type_train = sys.argv[5]
-    backbone = sys.argv[6]
+
+    epochs = int(os.getenv('NUM_EPOCHS', '48')) 
+    batch_size = int(os.getenv('BATCH_SIZE', '200'))
+    device = str(os.getenv('GPU_ID', '0'))
+    experiment = os.getenv('MODEL_TYPE', 'cnn')
+    type_train = os.getenv('TRAIN_TYPE', 'simple')
+    backbone = os.getenv('ARCH', 'resnet18')
+    path_data = os.getenv('SSL_SIZE', './data/ssl_seg_100')
 
     os.environ['gpu'] = device
     
@@ -29,5 +30,5 @@ if __name__ == '__main__' :
 
     else:
 
-        train_ssl(epochs=epochs, batch_size=batch_size, type_ssl=experiment, backbone=backbone)
+        train_ssl(epochs=epochs, batch_size=batch_size, type_ssl=experiment, path_data=path_data, backbone=backbone)
     

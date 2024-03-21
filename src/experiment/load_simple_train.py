@@ -78,7 +78,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     run = wandb.init(
         project="caries_cnn_simple",
         notes="first_experimental",
-        name='classify'+str(classify_type),
+        name='classify_'+backbone,
         config = { 
             "folds": folds,
             "epochs": epochs,

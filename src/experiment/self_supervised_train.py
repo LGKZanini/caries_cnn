@@ -28,7 +28,7 @@ from lightly.utils.scheduler import cosine_schedule # pyright: ignore[reportMiss
 from src.models.cnn_simple import CNN_simple
 from src.models.lighty import SimCLR, VICReg, BYOL
 
-from src.loader.tooth_data import ToothDataRotate, ToothDataJigsaw
+from src.loader.tooth_data import ToothDataRotate, ToothDataSSL
 from src.train.train_classification import Trainer
 from src.train.validation_classification import metrics_caries_rotate, metrics_caries_jigsaw
 from src.utils.load_data_main_cbct import make_path_ssl
@@ -63,7 +63,7 @@ def configure_setup(epochs, batch_size, name):
         config = {
             "epochs": epochs,
             "batch_size": batch_size,
-            "learning_rate_init": 0.001, 
+            "learning_rate_init": 0.01, 
         }
     )
 
@@ -82,9 +82,12 @@ def get_model_raw():
     return cnn
 
 
-def get_model(metrics, cnn, num_classes, learning_rate, device):
+def get_model(metrics, learning_rate, device):
 
-    model = CNN_simple(cnn, num_classes=num_classes).to('cuda:'+str(device))
+    resnet = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+    backbone_nn = nn.Sequential(*list(resnet.children())[:-1])
+
+    model =  CNN_simple(cnn=backbone_nn, input_nn=2048, num_classes=5).to('cuda:'+str(device))
     
     loss_function = nn.CrossEntropyLoss()
     
@@ -101,7 +104,7 @@ def get_model(metrics, cnn, num_classes, learning_rate, device):
     )
 
 
-def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
+def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data):
     
     resnet = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
     backbone_nn = nn.Sequential(*list(resnet.children())[:-1])
@@ -112,31 +115,28 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
         criterion = NegativeCosineSimilarity()
 
         transform = BYOLTransform(
-            view_1_transform=BYOLView1Transform(input_size=224, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]} ),
-            view_2_transform=BYOLView2Transform(input_size=224, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]} ),
+            view_1_transform=BYOLView1Transform(input_size=112, gaussian_blur=0.0),
+            view_2_transform=BYOLView2Transform(input_size=112, gaussian_blur=0.0),
         )
         
-
     elif type_ssl == 'vicreg':
 
         model = VICReg(backbone_nn).to('cuda:'+str(device))
         criterion = VICRegLoss()
-        transform = VICRegTransform(input_size=224, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]})
+        transform = VICRegTransform(input_size=112)
 
     else:
 
         model = SimCLR(backbone_nn).to('cuda:'+str(device))
         criterion = NTXentLoss()
-        transform = SimCLRTransform(input_size=224, gaussian_blur=0.0, normalize={'mean': [86.01, 86.01, 86.01], 'std': [79.11, 79.11, 79.11]})
+        transform = SimCLRTransform(input_size=112)
 
 
-    folder = './data/'
-
-    dataset = LightlyDataset(folder, transform=transform)
+    dataset = ToothDataSSL(path_data, transform=transform)
 
     dataloader = torch.utils.data.DataLoader(
         dataset,
-        batch_size=8,
+        batch_size=batch_size,
         shuffle=True,
         drop_last=True,
         num_workers=2,
@@ -211,9 +211,8 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs):
 
 
     torch.save(model.state_dict(), './src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
-
     artifact = wandb.Artifact(type_ssl, type='model')
-    artifact.add_file('./src/models/cnn_ssl_'+str(1)+'.pth')
+    artifact.add_file('./src/models/cnn_ssl_'+type_ssl+'.pth')
     run.log_artifact(artifact)
     run.finish()
 
@@ -234,37 +233,29 @@ def train_model(data_train, data_val, train_cnn, epochs, run, type_ssl):
     run.finish()
 
 
-def train_ssl(batch_size, epochs, type_ssl, backbone=None):
+def train_ssl(batch_size, epochs, type_ssl, path_data=None, backbone=None):
     
     run = configure_setup(epochs, batch_size, type_ssl)
     device = os.getenv('gpu')
-    cnn = get_model_raw()
-    learning_rate = 0.001
-
+    learning_rate = 0.01
 
     if type_ssl == 'rotate':
 
         data_train, data_val = make_data(ToothDataRotate, batch_size)
-        trainer = get_model(metrics_caries_rotate, cnn, num_classes=4, learning_rate=0.001, device=device)
-        train_model(data_train, data_val, trainer, epochs, run, type_ssl)
-
-    if type_ssl == 'jigsaw':
-
-        data_train, data_val = make_data(ToothDataJigsaw, batch_size)
-        trainer = get_model(metrics_caries_jigsaw, cnn, num_classes=9, learning_rate=0.001, device=device)
+        trainer = get_model(metrics_caries_rotate, learning_rate=learning_rate, device=device)
         train_model(data_train, data_val, trainer, epochs, run, type_ssl)
 
     if type_ssl == 'simclr':
 
-        train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs)
+        train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
 
     if type_ssl == 'byol':
 
-        train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs)
+        train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
 
     if type_ssl == 'vicreg':
 
-        train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs)
+        train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
 
 
     return
