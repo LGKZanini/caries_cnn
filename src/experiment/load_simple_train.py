@@ -12,7 +12,6 @@ from src.train.train_classification import Trainer
 from src.train.validation_classification import metrics_caries_icdas
 from src.utils.load_data_main_cbct import create_train_test
 
-
 def model_ssl(classify_type, cnn, run, device):
 
     # preciso mudar dps
@@ -67,7 +66,7 @@ def model_ssl(classify_type, cnn, run, device):
 
     return model.to('cuda:'+str(device))
 
-def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resnet18'):
+def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resnet18', backbone_arch=None):
 
     device = os.getenv('gpu')    
     api_key = os.getenv('WANDB_API_KEY')
@@ -78,7 +77,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     run = wandb.init(
         project="caries_cnn_simple",
         notes="first_experimental",
-        name='classify_'+backbone,
+        name='classify_'+backbone+'_'+str(classify_type),
         config = { 
             "folds": folds,
             "epochs": epochs,
@@ -102,11 +101,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
         
     else:
 
-        #preicos mudar dps
-        cnn = models.efficientnet_b0()
-        cnn.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
-
-        model = model_ssl(classify_type, cnn, run, device)
+        model = create_model(backbone, device, backbone_arch=backbone_arch)
 
 
     loss_function = nn.CrossEntropyLoss()

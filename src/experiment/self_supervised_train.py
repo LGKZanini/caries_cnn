@@ -30,8 +30,10 @@ from src.models.lighty import SimCLR, VICReg, BYOL
 
 from src.loader.tooth_data import ToothDataRotate, ToothDataSSL
 from src.train.train_classification import Trainer
-from src.train.validation_classification import metrics_caries_rotate, metrics_caries_jigsaw
+from src.train.validation_classification import metrics_caries_rotate
 from src.utils.load_data_main_cbct import make_path_ssl
+
+from src.experiment.load_simple_train import train_simple
 
 def make_data(load_data, batch_size):
     
@@ -216,7 +218,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, ru
     run.log_artifact(artifact)
     run.finish()
 
-    return 
+    return model.backbone
 
 
 def train_model(data_train, data_val, train_cnn, epochs, run, type_ssl):
@@ -233,7 +235,7 @@ def train_model(data_train, data_val, train_cnn, epochs, run, type_ssl):
     run.finish()
 
 
-def train_ssl(batch_size, epochs, type_ssl, path_data=None, backbone=None):
+def train_ssl(batch_size, epochs, type_ssl, backbone, path_data=None):
     
     run = configure_setup(epochs, batch_size, type_ssl)
     device = os.getenv('gpu')
@@ -243,19 +245,22 @@ def train_ssl(batch_size, epochs, type_ssl, path_data=None, backbone=None):
 
         data_train, data_val = make_data(ToothDataRotate, batch_size)
         trainer = get_model(metrics_caries_rotate, learning_rate=learning_rate, device=device)
-        train_model(data_train, data_val, trainer, epochs, run, type_ssl)
+        
+        backbone_arch= train_model(data_train, data_val, trainer, epochs, run, type_ssl)
 
-    if type_ssl == 'simclr':
+    elif type_ssl == 'simclr':
 
-        train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
 
-    if type_ssl == 'byol':
+    elif type_ssl == 'byol':
 
-        train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
 
-    if type_ssl == 'vicreg':
+    else:
 
-        train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
 
+
+    train_simple(epochs=epochs, batch_size=batch_size, folds=4, classify_type=type_ssl, backbone=backbone, backbone_arch=backbone_arch)
 
     return

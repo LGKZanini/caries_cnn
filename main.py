@@ -8,8 +8,8 @@ from src.experiment.self_supervised_train import train_ssl
 
 if __name__ == '__main__' :
 
-    epochs = int(os.getenv('NUM_EPOCHS', '48')) 
-    batch_size = int(os.getenv('BATCH_SIZE', '200'))
+    epochs = int(os.getenv('NUM_EPOCHS', '200')) 
+    batch_size = int(os.getenv('BATCH_SIZE', '48'))
     device = str(os.getenv('GPU_ID', '0'))
     experiment = os.getenv('MODEL_TYPE', 'cnn')
     type_train = os.getenv('TRAIN_TYPE', 'simple')
