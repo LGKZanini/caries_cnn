@@ -84,8 +84,7 @@ class ToothDataSSL(Dataset):
         
         super(Dataset, self).__init__()
         
-        self.data = path+'/save.npy'
-
+        self.data = np.load(path+'/save.npy')
         self.transform = transform
             
     def __len__(self):
