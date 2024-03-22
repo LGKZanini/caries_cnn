@@ -218,7 +218,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, ru
 
     torch.save(model.state_dict(), './src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
     artifact = wandb.Artifact(type_ssl, type='model')
-    artifact.add_file('./src/models/cnn_ssl_'+type_ssl+'.pth')
+    artifact.add_file('./src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
     run.log_artifact(artifact)
     run.finish()
 
