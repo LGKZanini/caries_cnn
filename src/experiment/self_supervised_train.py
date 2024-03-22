@@ -105,8 +105,10 @@ def get_model(metrics, learning_rate, device):
 
 def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data):
     
-    resnet = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
-    backbone_nn = nn.Sequential(*list(resnet.children())[:-1])
+
+    resnet50 = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+    resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+    backbone_nn = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
 
     if type_ssl == 'byol':
 
