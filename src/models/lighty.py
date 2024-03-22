@@ -48,11 +48,8 @@ class BYOL(nn.Module):
 
         self.backbone = backbone
 
-
         self.projection_head = BYOLProjectionHead(2048, 1024, 256)
         self.prediction_head = BYOLPredictionHead(256, 1024, 256)
-
-
 
         self.backbone_momentum = copy.deepcopy(self.backbone)
         self.projection_head_momentum = copy.deepcopy(self.projection_head)

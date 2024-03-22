@@ -97,7 +97,7 @@ class ToothDataSSL(Dataset):
         x = np.load(self.data[index])
         x = torch.from_numpy(x)
 
-        return self.transform(x).float(), index
+        return self.transform(x)
 
 class ToothDataJigsaw(Dataset):
     

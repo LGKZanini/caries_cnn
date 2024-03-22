@@ -8,12 +8,9 @@ from torchvision import models # pyright: ignore[reportMissingImports]
 from torch.utils.data import DataLoader # pyright: ignore[reportMissingImports]
 
 from lightly.loss import NegativeCosineSimilarity, NTXentLoss, VICRegLoss # pyright: ignore[reportMissingImports]
-from lightly.data.dataset import LightlyDataset # pyright: ignore[reportMissingImports]
-
 from lightly.transforms.simclr_transform import SimCLRTransform # pyright: ignore[reportMissingImports]
-
-
 from lightly.transforms.vicreg_transform import VICRegTransform # pyright: ignore[reportMissingImports]
+from lightly.data import LightlyDataset # pyright: ignore[reportMissingImports]
 
 from lightly.models.utils import  update_momentum # pyright: ignore[reportMissingImports]
 from lightly.transforms.byol_transform import ( # pyright: ignore[reportMissingImports]
@@ -117,24 +114,28 @@ def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, ru
         criterion = NegativeCosineSimilarity()
 
         transform = BYOLTransform(
-            view_1_transform=BYOLView1Transform(input_size=112, gaussian_blur=0.0),
-            view_2_transform=BYOLView2Transform(input_size=112, gaussian_blur=0.0),
+            view_1_transform=BYOLView1Transform(input_size=112, gaussian_blur=0.0, normalize={'mean':(0.5, 0.5, 0.5), 'std':(0.5, 0.5, 0.5)}),
+            view_2_transform=BYOLView2Transform(input_size=112, gaussian_blur=0.0, normalize={'mean':(0.5, 0.5, 0.5), 'std':(0.5, 0.5, 0.5)}),
         )
         
     elif type_ssl == 'vicreg':
 
         model = VICReg(backbone_nn).to('cuda:'+str(device))
         criterion = VICRegLoss()
-        transform = VICRegTransform(input_size=112)
+        transform = VICRegTransform(input_size=112, normalize={'mean':(0.5, 0.5, 0.5), 'std':(0.5, 0.5, 0.5)})
 
     else:
 
         model = SimCLR(backbone_nn).to('cuda:'+str(device))
         criterion = NTXentLoss()
-        transform = SimCLRTransform(input_size=112)
+        transform = SimCLRTransform(input_size=112, normalize={'mean':(0.5, 0.5, 0.5), 'std':(0.5, 0.5, 0.5)})
 
 
-    dataset = ToothDataSSL(path_data, transform=transform)
+    dataset = LightlyDataset(
+        input_dir=path_data,
+        transform=transform
+    )
+
 
     dataloader = torch.utils.data.DataLoader(
         dataset,
@@ -159,13 +160,15 @@ def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, ru
 
                 x0, x1 = batch[0]
 
+                print(x0.shape)
+
                 update_momentum(model.backbone, model.backbone_momentum, m=momentum_val)
 
                 update_momentum( model.projection_head, model.projection_head_momentum, m=momentum_val )
 
 
-                x0 = x0.to('cuda:'+str(device))
-                x1 = x1.to('cuda:'+str(device))
+                x0 = x0[:1, :, :].to('cuda:'+str(device))
+                x1 = x1[:1, :, :].to('cuda:'+str(device))
 
                 p0 = model(x0)
                 z0 = model.forward_momentum(x0)
@@ -192,8 +195,9 @@ def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, ru
             for batch in dataloader:
 
                 x0, x1 = batch[0]
-                x0 = x0.to(device)
-                x1 = x1.to(device)
+                
+                x0 = x0[:1, :, :].to('cuda:'+str(device))
+                x1 = x1[:1, :, :].to('cuda:'+str(device))
 
                 z0 = model(x0)
                 z1 = model(x1)
