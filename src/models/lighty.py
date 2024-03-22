@@ -15,7 +15,7 @@ class SimCLR(nn.Module):
     def __init__(self, backbone):
         super().__init__()
         self.backbone = backbone
-        self.projection_head = SimCLRProjectionHead(512, 512, 128)
+        self.projection_head = SimCLRProjectionHead(2048, 1024, 128)
 
     def forward(self, x):
         x = self.backbone(x).flatten(start_dim=1)
@@ -31,9 +31,9 @@ class VICReg(nn.Module):
         self.backbone = backbone
 
         self.projection_head = VICRegProjectionHead(
-            input_dim=512,
-            hidden_dim=2048,
-            output_dim=2048,
+            input_dim=2048,
+            hidden_dim=1024,
+            output_dim=1024,
             num_layers=2,
         )
 

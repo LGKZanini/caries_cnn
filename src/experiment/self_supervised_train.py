@@ -164,7 +164,6 @@ def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, ru
 
                 x0 = x0[:, :1, :, :].to('cuda:'+str(device))
                 x1 = x1[:, :1, :, :].to('cuda:'+str(device))
-                print(x0.shape)
 
                 update_momentum(model.backbone, model.backbone_momentum, m=momentum_val)
 
