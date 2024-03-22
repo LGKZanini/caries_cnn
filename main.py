@@ -30,5 +30,5 @@ if __name__ == '__main__' :
 
     else:
 
-        train_ssl(epochs=epochs, batch_size=batch_size, type_ssl=experiment, path_data=path_data, backbone=backbone)
+        train_ssl(epochs=epochs, batch_size=batch_size, type_ssl=type_train, path_data=path_data, backbone=backbone)
     

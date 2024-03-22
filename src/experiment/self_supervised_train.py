@@ -166,7 +166,6 @@ def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, ru
 
                 update_momentum( model.projection_head, model.projection_head_momentum, m=momentum_val )
 
-
                 x0 = x0[:1, :, :].to('cuda:'+str(device))
                 x1 = x1[:1, :, :].to('cuda:'+str(device))
 
@@ -195,7 +194,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, ru
             for batch in dataloader:
 
                 x0, x1 = batch[0]
-                
+
                 x0 = x0[:1, :, :].to('cuda:'+str(device))
                 x1 = x1[:1, :, :].to('cuda:'+str(device))
 
