@@ -103,7 +103,7 @@ def get_model(metrics, learning_rate, device):
     )
 
 
-def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data):
+def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, path_data):
 
     batch_size = int(os.getenv('BATCH_SIZE_SSL', '128'))
 
@@ -219,7 +219,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, ru
     torch.save(model.state_dict(), './src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
     artifact = wandb.Artifact(type_ssl, type='model')
     artifact.add_file('./src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
-        run.log_artifact(artifact)
+    run.log_artifact(artifact)
     run.finish()
 
     return model.backbone
@@ -254,15 +254,15 @@ def train_ssl(batch_size, epochs, type_ssl, backbone, path_data=None):
 
     elif type_ssl == 'simclr':
 
-        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, path_data)
 
     elif type_ssl == 'byol':
 
-        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, path_data)
 
     else:
 
-        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, path_data)
 
 
     train_simple(epochs=epochs, batch_size=batch_size, folds=4, classify_type=type_ssl, backbone=backbone, backbone_arch=backbone_arch)
