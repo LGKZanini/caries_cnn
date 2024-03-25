@@ -104,7 +104,8 @@ def get_model(metrics, learning_rate, device):
 
 
 def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, run, epochs, path_data):
-    
+
+    batch_size = int(os.getenv('BATCH_SIZE_SSL', '128'))
 
     resnet50 = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
     resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
@@ -218,7 +219,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, batch_size, device, ru
     torch.save(model.state_dict(), './src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
     artifact = wandb.Artifact(type_ssl, type='model')
     artifact.add_file('./src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
-    run.log_artifact(artifact)
+        run.log_artifact(artifact)
     run.finish()
 
     return model.backbone
