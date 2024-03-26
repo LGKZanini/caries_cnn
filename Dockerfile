@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.6.0-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:11.6.2-cudnn8-runtime-ubuntu20.04
 
 RUN apt-get update && apt-get install -y python3 python3-pip sudo
 

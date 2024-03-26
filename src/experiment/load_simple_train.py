@@ -6,65 +6,11 @@ from torch import nn # pyright: ignore[reportMissingImports]
 from torchvision import models # pyright: ignore[reportMissingImports]
 from torch.utils.data import DataLoader # pyright: ignore[reportMissingImports]
 
-from src.models.cnn_simple import CNN_simple, create_model
+from src.models.cnn_simple import create_model
 from src.loader.tooth_data import ToothData
 from src.train.train_classification import Trainer
 from src.train.validation_classification import metrics_caries_icdas
 from src.utils.load_data_main_cbct import create_train_test
-
-def model_ssl(classify_type, cnn, run, device):
-
-    # preciso mudar dps
-    if classify_type == 'rotate':
-        
-        artifact = run.use_artifact('luizzanini/caries_cnn_simple/rotate:v0', type='model')
-        artifact_dir = artifact.download()
-        
-        #mudar aqui
-        model = CNN_simple(cnn, num_classes=4)
-        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
-
-    if classify_type == 'simclr':
-        
-        artifact = run.use_artifact('luizzanini/caries_cnn_simple/simclr:v0', type='model')
-        artifact_dir = artifact.download()
-
-        #mudar aqui 
-        model = CNN_simple(cnn, num_classes=4)
-        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
-
-
-    if classify_type == 'byol':
-        
-        artifact = run.use_artifact('luizzanini/caries_cnn_simple/byol:v0', type='model')
-        artifact_dir = artifact.download()
-
-        #mudar aqui
-        model = CNN_simple(cnn, num_classes=4)
-        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
-
-    if classify_type == 'VICReg':
-        
-        artifact = run.use_artifact('luizzanini/caries_cnn_simple/VICReg:v0', type='model')
-        artifact_dir = artifact.download()
-
-        #mudar aqui
-        model = CNN_simple(cnn, num_classes=4)
-        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
-
-    
-    else :
-
-        artifact = run.use_artifact('luizzanini/caries_cnn_simple/jigsaw:v0', type='model')
-        artifact_dir = artifact.download()
-
-        model = CNN_simple(cnn, num_classes=9)
-        model.load_state_dict(torch.load(artifact_dir+'/cnn_ssl_'+str(1)+'.pth'))
-
-
-    model.linear2 = nn.Linear(2000, 5)
-
-    return model.to('cuda:'+str(device))
 
 def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resnet18', backbone_arch=None):
 
@@ -76,7 +22,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
 
     run = wandb.init(
         project="caries_cnn_simple",
-        notes="first_experimental",
+        entity='luizzanini',
         name='classify_'+backbone+'_'+str(classify_type),
         config = { 
             "folds": folds,
@@ -122,10 +68,11 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     
     model = train_cnn.model
     
-    torch.save(model.state_dict(), './src/models/cnn_ssl_'+str(1)+'.pth')
+    torch.save(model.state_dict(), './src/models/cnn_ssl_'+str(classify_type)+'_'+str(backbone)+'.pth')
 
-    artifact = wandb.Artifact('classify_'+str(classify_type), type='model')
-    artifact.add_file('./src/models/cnn_ssl_'+str(1)+'.pth')
+    artifact = wandb.Artifact('classify_'+str(classify_type)+'_'+str(backbone), type='model')
+    artifact.add_file('./src/models/cnn_ssl_'+str(classify_type)+'_'+str(backbone)+'.pth')
+    
     run.log_artifact(artifact)
     run.finish()
     
