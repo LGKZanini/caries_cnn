@@ -145,7 +145,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, p
         batch_size=batch_size,
         shuffle=True,
         drop_last=True,
-        num_workers=8,
+        num_workers=0,
         pin_memory=True,
     )
     
