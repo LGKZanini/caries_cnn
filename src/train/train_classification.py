@@ -63,13 +63,14 @@ class Trainer:
         y_val = []
         y_pred = []
         loss_item = []
+        ok = False
         
         for X_test, y_test in val_data:
             
             X_test = X_test.to('cuda:'+str(self.device))
             y_test = y_test.to('cuda:'+str(self.device))
                              
-            y_predicted = self.model(X_test)
+            y_predicted = self.model.eval(X_test)
             
             loss = self.loss_fn(y_predicted, y_test)
             loss_aux = loss.item()
@@ -77,9 +78,9 @@ class Trainer:
             
             y_pred_model = torch.sigmoid(y_predicted)
             
-            y_pred = np.append(y_pred, y_pred_model.detach().cpu().numpy(), axis=0)
-            y_val = np.append(y_val, y_test.detach().cpu().numpy(), axis=0) 
-            
+            y_pred = np.concatenate((y_pred, y_pred_model.detach().cpu().numpy()), axis=0)
+            y_val = np.concatenate((y_val, y_test.detach().cpu().numpy()), axis=0)
+
         self.get_metrics(y_val, y_pred, loss_item)
         
         return
