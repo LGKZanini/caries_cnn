@@ -69,7 +69,7 @@ class Trainer:
             X_test = X_test.to('cuda:'+str(self.device))
             y_test = y_test.to('cuda:'+str(self.device))
                              
-            y_predicted = self.model.eval(X_test)
+            y_predicted = self.model(X_test)
             
             loss = self.loss_fn(y_predicted, y_test)
             loss_aux = loss.item()
