@@ -70,21 +70,13 @@ class Trainer:
             X_test = X_test.to('cuda:'+str(self.device))
             y_test = y_test.to('cuda:'+str(self.device))
                              
-            y_predicted = self.model(X_test)
+            y_predicted = self.model.eval(X_test)
             
             loss = self.loss_fn(y_predicted, y_test)
             loss_aux = loss.item()
             loss_item.append(loss_aux)
             
             y_pred_model = torch.sigmoid(y_predicted)
-            
-            if ok == False:
-                
-                y_pred = y_pred_model.detach().cpu().numpy().copy()
-                y_val = y_test.detach().cpu().numpy().copy()
-                    
-                ok = True
-                continue
             
             y_pred = np.append(y_pred, y_pred_model.detach().cpu().numpy(), axis=0)
             y_val = np.append(y_val, y_test.detach().cpu().numpy(), axis=0) 
