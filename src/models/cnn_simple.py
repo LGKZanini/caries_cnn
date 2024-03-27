@@ -88,19 +88,19 @@ def create_model(backbone, device, backbone_arch=None):
 
         if backbone_arch is None:
             
-            vgg19 = models.vgg19(pretrained=True)
-            vgg19.features[0] = nn.Conv2d(1, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-            vgg19_backbone = vgg19.features
-            vgg19_backbone.add_module('global_average_pooling', nn.AdaptiveAvgPool2d((1, 1)))
+            vgg16 = models.vgg16(pretrained=True)
+            vgg16.features[0] = nn.Conv2d(1, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            vgg16_backbone = vgg16.features
+            vgg16_backbone.add_module('global_average_pooling', nn.AdaptiveAvgPool2d((1, 1)))
 
-            return CNN_simple(cnn=vgg19_backbone, input_nn=512, num_classes=5).to('cuda:'+str(device))
+            return CNN_simple(cnn=vgg16_backbone, input_nn=512, num_classes=5).to('cuda:'+str(device))
 
         else:
 
             return CNN_simple(cnn=backbone_arch, input_nn=512, num_classes=5).to('cuda:'+str(device))
 
     
-    # Implementar dps if backbone == 'VGG19':
+    # Implementar dps if backbone == 'vgg16':
 
 
 
