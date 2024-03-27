@@ -11,19 +11,31 @@ class CNN_simple(nn.Module):
         self.cnn = cnn
         self.dp = nn.Dropout(p=dp)
         
-        self.linear1 = nn.Linear(input_nn, input_nn // 2)
-        self.relu = nn.ReLU()        
-        self.linear2 = nn.Linear(input_nn // 2, num_classes)
+        self.linear1 = nn.Linear(input_nn, input_nn // 2,  bias=True)
+        self.bn1 = nn.BatchNorm1d(num_features= input_nn // 2)  
+
+        self.lrelu = nn.LeakyReLU(negative_slope=0.01)
+
+        self.linear2 = nn.Linear(in_features=input_nn // 2, out_features=input_nn // 4, bias=True)  # Adicionando mais uma camada intermediária
+        self.bn2 = nn.BatchNorm1d(num_features=input_nn // 4)  # Batch Normalization após a segunda camada linear
+
+        self.linear3 = nn.Linear(input_nn // 4, num_classes,  bias=True)
         
     def forward(self, x):
 
-        output_cnn = self.cnn(x).flatten(start_dim=1)
+        x = self.cnn(x).flatten(start_dim=1)
         
-        dp_fc = self.dp(output_cnn)
-        output_fc1 = self.relu(self.linear1(dp_fc))
-        output_fc = self.linear2(output_fc1)
+        x = self.dp(x)
+        x = self.linear1(x)
+        x = self.bn1(x)
+        x = self.lrelu(x) 
+        x = self.dp(x)
+        x = self.linear2(x)
+        x = self.bn2(x)
+        x = self.lrelu(x)  
+        x = self.linear3(x)
 
-        return output_fc
+        return x
 
 
 def create_model(backbone, device, backbone_arch=None):
