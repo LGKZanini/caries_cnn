@@ -1,7 +1,7 @@
 import torch # pyright: ignore[reportMissingImports]
 import numpy as np # pyright: ignore[reportMissingImports]
+import torch.nn.functional as F # pyright: ignore[reportMissingImports]
 
-from sklearn.metrics import confusion_matrix # pyright: ignore[reportMissingImports]
 
 class Trainer:
 
@@ -74,7 +74,7 @@ class Trainer:
             loss = self.loss_fn(y_predicted, y_test)
             loss_items.append(loss.item())  # Adicionando o item de perda à lista
             
-            y_pred_model = torch.sigmoid(y_predicted).detach().cpu().numpy()
+            y_pred_model = F.softmax(y_predicted).detach().cpu().numpy()
             y_pred.append(y_pred_model)  # Adicionando o array ao coletor de y_pred
             
             y_val.append(y_test.detach().cpu().numpy())  # Adicionando o array ao coletor de y_val
