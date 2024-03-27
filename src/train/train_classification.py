@@ -60,24 +60,29 @@ class Trainer:
     
     def validation(self, val_data):
         
-        y_val = np.array([]).reshape(0, -1) 
-        y_pred = np.array([]).reshape(0, -1)  
-        loss_item = np.array([]) 
+        y_val = []  # Lista para coletar y_val
+        y_pred = []  # Lista para coletar y_pred
+        loss_items = []  # Lista para coletar os itens de perda
+
         for X_test, y_test in val_data:
             
-            X_test = X_test.to('cuda:'+str(self.device))
-            y_test = y_test.to('cuda:'+str(self.device))
+            X_test = X_test.to(f'cuda:{self.device}')
+            y_test = y_test.to(f'cuda:{self.device}')
                                 
             y_predicted = self.model(X_test)
             
             loss = self.loss_fn(y_predicted, y_test)
-            loss_item = np.append(loss_item, loss.item())  
+            loss_items.append(loss.item())  # Adicionando o item de perda à lista
             
-            y_pred_model = torch.sigmoid(y_predicted)
+            y_pred_model = torch.sigmoid(y_predicted).detach().cpu().numpy()
+            y_pred.append(y_pred_model)  # Adicionando o array ao coletor de y_pred
             
-            y_pred = np.concatenate((y_pred, y_pred_model.detach().cpu().numpy()), axis=0)
-            y_val = np.concatenate((y_val, y_test.detach().cpu().numpy()), axis=0)
+            y_val.append(y_test.detach().cpu().numpy())  # Adicionando o array ao coletor de y_val
 
+        # Convertendo listas para arrays do NumPy após a coleta
+        y_val = np.concatenate(y_val, axis=0) if y_val else np.array([])
+        y_pred = np.concatenate(y_pred, axis=0) if y_pred else np.array([])
+        loss_item = np.array(loss_items) if loss_items else np.array([])
 
         self.get_metrics(y_val, y_pred, loss_item)
         
