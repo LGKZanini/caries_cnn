@@ -72,7 +72,7 @@ class Trainer:
             y_predicted = self.model(X_test)
             
             loss = self.loss_fn(y_predicted, y_test)
-            loss_item = np.concatenate(loss.item())
+            loss_item = np.concatenate((loss_item, loss.item()))
             
             y_pred_model = torch.sigmoid(y_predicted)
             
