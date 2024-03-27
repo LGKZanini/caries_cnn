@@ -63,7 +63,6 @@ class Trainer:
         y_val = []
         y_pred = []
         loss_item = []
-        ok = False
         
         for X_test, y_test in val_data:
             

@@ -38,8 +38,8 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     dataset_train = ToothData(data_train)
     dataset_val = ToothData(data_test)
     
-    train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=8, shuffle=True, pin_memory=True)
-    val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=8, shuffle=True, pin_memory=True)
+    train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=8, shuffle=True, pin_memory=True, drop_last=True)
+    val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=8, shuffle=True, pin_memory=True, drop_last=True)
     
     if classify_type is None :
 

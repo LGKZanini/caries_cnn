@@ -147,6 +147,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, p
         drop_last=True,
         num_workers=8,
         pin_memory=True,
+        drop_last=True
     )
     
     optimizer_adam = torch.optim.Adam(model.parameters(), lr=learning_rate)
