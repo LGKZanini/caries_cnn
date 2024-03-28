@@ -84,18 +84,6 @@ class Trainer:
         y_pred = np.concatenate(y_pred, axis=0) if y_pred else np.array([])
         loss_item = np.array(loss_items) if loss_items else np.array([])
 
-        if epoch == 49:
-            print(y_val)
-            print(y_pred)
-            print('---------------')
-
-            y_val_v2 = np.argmax(y_val, axis=1)
-            y_pred_v2 = np.argmax(y_pred, axis=1)
-
-            print(y_val_v2)
-            print(y_pred_v2)
-
-
         self.get_metrics(y_val, y_pred, loss_item)
         
         return
