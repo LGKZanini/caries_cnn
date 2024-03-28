@@ -53,7 +53,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     loss_function = nn.CrossEntropyLoss()
     
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.5)
 
     train_cnn = Trainer(
         get_metrics=metrics_caries_icdas, 

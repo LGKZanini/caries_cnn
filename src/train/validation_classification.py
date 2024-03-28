@@ -1,7 +1,7 @@
 import numpy as np  # pyright: ignore[reportMissingImports]
 import wandb # pyright: ignore[reportMissingImports]
 
-from sklearn.metrics import confusion_matrix # pyright: ignore[reportMissingImports]
+from sklearn.metrics import confusion_matrix, f1_score # pyright: ignore[reportMissingImports]
     
 def metrics_caries_icdas( y_val, y_pred, loss_item):
     
@@ -23,6 +23,7 @@ def metrics_caries_icdas( y_val, y_pred, loss_item):
     wandb.log({
         "Loss_val" : sum(loss_item) / len(loss_item),
         "Accuracy" : acc,
+        'F1-score' : f1_score(y_val, y_pred, average='macro'),
         'Precision 0' : precision[0],
         'Precision 1' : precision[1],
         'Precision 2' : precision[2],
