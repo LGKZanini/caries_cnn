@@ -60,24 +60,27 @@ class Trainer:
     
     def validation(self, val_data, epoch):
         
+        self.model.eval()  # Colocando o modelo em modo de avaliação
+    
         y_val = []  # Lista para coletar y_val
         y_pred = []  # Lista para coletar y_pred
         loss_items = []  # Lista para coletar os itens de perda
 
-        for X_test, y_test in val_data:
-            
-            X_test = X_test.to(f'cuda:{self.device}')
-            y_test = y_test.to(f'cuda:{self.device}')
-                                
-            y_predicted = self.model(X_test)
-            
-            loss = self.loss_fn(y_predicted, y_test)
-            loss_items.append(loss.item())  # Adicionando o item de perda à lista
-            
-            y_pred_model = F.softmax(y_predicted, dim=1).detach().cpu().numpy()
-            y_pred.append(y_pred_model)  # Adicionando o array ao coletor de y_pred
-            
-            y_val.append(y_test.detach().cpu().numpy())  # Adicionando o array ao coletor de y_val
+        with torch.no_grad():  # Desativando o cálculo de gradiente para a validação
+        
+            for X_test, y_test in val_data:
+
+                X_test = X_test.to(f'cuda:{self.device}')
+                y_test = y_test.to(f'cuda:{self.device}')
+                
+                y_predicted = self.model(X_test)
+                loss = self.loss_fn(y_predicted, y_test)
+                loss_items.append(loss.item())  # Adicionando o item de perda à lista
+                
+                y_pred_model = F.softmax(y_predicted, dim=1).detach().cpu().numpy()
+                y_pred.append(y_pred_model)  # Adicionando o array ao coletor de y_pred
+                
+                y_val.append(y_test.detach().cpu().numpy())  # Adicionando o array ao coletor de y_val
 
         # Convertendo listas para arrays do NumPy após a coleta
         y_val = np.concatenate(y_val, axis=0) if y_val else np.array([])
@@ -85,5 +88,7 @@ class Trainer:
         loss_item = np.array(loss_items) if loss_items else np.array([])
 
         self.get_metrics(y_val, y_pred, loss_item)
+        
+        self.model.train() 
         
         return
