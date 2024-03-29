@@ -19,7 +19,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     
     wandb.login(key=api_key)
     
-    for fold in range(5):
+    for fold in range(1, 6):
 
         run = wandb.init(
             project="caries_cnn_simple",
