@@ -102,12 +102,12 @@ def make_folds(total_folds, perm=64, ssl=False):
     return folds
     
 
-def create_train_test():
+def create_train_test(fold):
 
     path_load = './data/'
 
-    train = np.load(path_load+'train.npy', allow_pickle=True)
-    test = np.load(path_load+'test.npy', allow_pickle=True)
+    train = np.load(path_load+'train'+str(fold)+'.npy', allow_pickle=True)
+    test = np.load(path_load+'test'+str(fold)+'.npy', allow_pickle=True)
 
     return train, test
 
