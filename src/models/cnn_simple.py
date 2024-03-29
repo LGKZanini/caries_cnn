@@ -37,6 +37,17 @@ class CNN_simple(nn.Module):
 
         return x
 
+class InceptionGrayScaleAdapter(nn.Module):
+                
+    def __init__(self, original_model):
+        super(InceptionGrayScaleAdapter, self).__init__()
+        self.gray_to_rgb = nn.Conv2d(1, 3, kernel_size=1, stride=1, padding=0)  # Adapta de 1 para 3 canais
+        self.original_model = original_model
+    
+    def forward(self, x):
+        x = self.gray_to_rgb(x)  # Converte escala de cinza para "RGB"
+        x = self.original_model(x)  # Passa pela InceptionV3 original
+        return x 
 
 def create_model(backbone, device, backbone_arch=None):
 
@@ -88,16 +99,16 @@ def create_model(backbone, device, backbone_arch=None):
 
         if backbone_arch is None:
             
-            vgg16 = models.vgg16(pretrained=True)
-            vgg16.features[0] = nn.Conv2d(1, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-            vgg16_backbone = vgg16.features
-            vgg16_backbone.add_module('global_average_pooling', nn.AdaptiveAvgPool2d((1, 1)))
+            inception = models.inception_v3(pretrained=True, aux_logits=False)
+            inception.fc = nn.Identity()  # Remove a última camada FC
+            
+            adapted_inception = InceptionGrayScaleAdapter(inception)
 
-            return CNN_simple(cnn=vgg16_backbone, input_nn=512, num_classes=5).to('cuda:'+str(device))
+            return CNN_simple(cnn=adapted_inception, input_nn=2048, num_classes=5).to('cuda:'+str(device))
 
         else:
 
-            return CNN_simple(cnn=backbone_arch, input_nn=512, num_classes=5).to('cuda:'+str(device))
+            return CNN_simple(cnn=backbone_arch, input_nn=2048, num_classes=5).to('cuda:'+str(device))
 
     
     # Implementar dps if backbone == 'vgg16':
