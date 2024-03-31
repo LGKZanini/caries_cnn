@@ -99,7 +99,7 @@ def create_model(backbone, device, backbone_arch=None):
 
         if backbone_arch is None:
             
-            inception = models.inception_v3(pretrained=True, aux_logits=False)
+            inception = models.inception_v3(aux_logits=False)
             inception.fc = nn.Identity()  # Remove a última camada FC
             
             adapted_inception = InceptionGrayScaleAdapter(inception)
