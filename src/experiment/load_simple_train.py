@@ -12,7 +12,7 @@ from src.train.train_classification import Trainer
 from src.train.validation_classification import metrics_caries_icdas
 from src.utils.load_data_main_cbct import create_train_test
 
-def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resnet18', backbone_arch=None):
+def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resnet18', backbone_arch=None, fold_ssl=False):
 
     device = os.getenv('gpu')    
     api_key = os.getenv('WANDB_API_KEY')
@@ -76,5 +76,9 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
         
         run.log_artifact(artifact)
         run.finish()
+
+        if fold_ssl == True:
+
+            return
     
     return
