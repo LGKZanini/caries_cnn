@@ -264,6 +264,6 @@ def train_ssl(batch_size, epochs, type_ssl, backbone, path_data=None):
         backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, path_data)
 
 
-    train_simple(epochs=epochs, batch_size=batch_size, folds=4, classify_type=type_ssl, backbone=backbone, backbone_arch=backbone_arch, fold_ssl=True)
+    train_simple(epochs=epochs, batch_size=batch_size, folds=4, classify_type=type_ssl, backbone=backbone, backbone_arch=backbone_arch, fold_ssl=path_data)
 
     return
