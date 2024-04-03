@@ -112,19 +112,14 @@ def create_train_test(fold):
     return train, test
 
 
-def make_path_ssl():
+def make_path_ssl(path_load):
     
-    path_load_ssl = './data/'
     paths_result = []
-
-    for dire in os.listdir(path_load_ssl):
         
-        actual_path = path_load_ssl+dire
+    paths = os.listdir(path_load)
 
-        paths = os.listdir(actual_path)
-    
-        for path in paths:
-            
-            paths_result.append(actual_path+'/'+path)
+    for path in paths:
+        
+        paths_result.append(path_load+'/'+path)
             
     return paths_result

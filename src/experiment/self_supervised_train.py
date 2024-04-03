@@ -32,21 +32,17 @@ from src.utils.load_data_main_cbct import make_path_ssl
 
 from src.experiment.load_simple_train import train_simple
 
-def make_data(load_data, batch_size):
+def make_data(path_data, batch_size):
+
+    batch_size = int(os.getenv('BATCH_SIZE_SSL', '128'))
+
+    paths = make_path_ssl(path_data) 
+
+    dataset_train = ToothDataRotate(paths)
     
-    data_folds = make_path_ssl()
-    idx_total = len(data_folds)
+    train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=8, shuffle=True, pin_memory=True)
 
-    data_train = data_folds[ : int(0.8*idx_total)]
-    data_val = data_folds[int(0.8*idx_total) : idx_total]
-
-    dataset_train = load_data(data_train) 
-    dataset_val = load_data(data_val)
-
-    train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
-    val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
-
-    return train_data, val_data
+    return train_data
 
 
 def configure_setup(epochs, batch_size, name):
@@ -66,12 +62,11 @@ def configure_setup(epochs, batch_size, name):
         }
     )
 
-def make_data_loader(dataset_train, dataset_val, batch_size):
+def make_data_loader(dataset_train, batch_size, path_data):
 
     train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
-    val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=2, shuffle=True, pin_memory=True)
 
-    return train_data, val_data
+    return train_data
 
 def get_model_raw():
 
@@ -103,9 +98,10 @@ def get_model(metrics, learning_rate, device):
     )
 
 
-def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, path_data):
+def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data):
 
     batch_size = int(os.getenv('BATCH_SIZE_SSL', '128'))
+    epochs = int(os.getenv('EPOCHS_SSL', '500'))
 
     resnet50 = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
     resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
@@ -150,7 +146,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, p
     )
     
     optimizer_adam = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=10, gamma=0.5)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=25, gamma=0.5)
 
     if type_ssl == 'byol':
 
@@ -167,7 +163,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, p
                 x1 = x1[:, :1, :, :].to('cuda:'+str(device))
 
                 update_momentum(model.backbone, model.backbone_momentum, m=momentum_val)
-                update_momentum( model.projection_head, model.projection_head_momentum, m=momentum_val )
+                update_momentum(model.projection_head, model.projection_head_momentum, m=momentum_val)
 
                 p0 = model(x0)
                 z0 = model.forward_momentum(x0)
@@ -238,6 +234,57 @@ def train_model(data_train, data_val, train_cnn, epochs, run, type_ssl):
     run.finish()
 
 
+def train_model_rotate(backbone, type_ssl, learning_rate, device, run, dataloader):
+
+    epochs = int(os.getenv('EPOCHS_SSL', '500'))
+
+    resnet50 = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+    resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+    backbone_nn = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
+
+    model = CNN_simple(backbone_nn, 2048, num_classes=4)
+    
+    optimizer_adam = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=20, gamma=0.5)
+
+    loss_function = nn.CrossEntropyLoss()
+
+    for epoch in range(epochs):
+
+        total_loss = 0
+
+        for X_train, y_train in dataloader:
+
+            X_train = X_train[:, :1, :, :].to('cuda:'+str(device))
+            y_train = y_train.to('cuda:'+str(device))
+
+            y_predicted = model(X_train)
+
+            loss = loss_function(y_predicted, y_train)  
+
+            total_loss += loss.detach()
+            
+            loss.backward()
+
+            total_loss += loss.detach()
+            
+            optimizer_adam.step()
+            optimizer_adam.zero_grad()
+
+        scheduler.step()
+
+        avg_loss = total_loss / len(dataloader)
+        print(f"epoch: {epoch:>02}, loss: {avg_loss:.5f}")
+
+    torch.save(model.state_dict(), './src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
+    artifact = wandb.Artifact(type_ssl, type='model')
+    artifact.add_file('./src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
+    run.log_artifact(artifact)
+    run.finish()
+
+    return model.backbone
+
+
 def train_ssl(batch_size, epochs, type_ssl, backbone, path_data=None):
     
     run = configure_setup(epochs, batch_size, type_ssl)
@@ -246,22 +293,21 @@ def train_ssl(batch_size, epochs, type_ssl, backbone, path_data=None):
 
     if type_ssl == 'rotate':
 
-        data_train, data_val = make_data(ToothDataRotate, batch_size)
-        trainer = get_model(metrics_caries_rotate, learning_rate=learning_rate, device=device)
+        data_train = make_data(path_data, batch_size)
         
-        backbone_arch= train_model(data_train, data_val, trainer, epochs, run, type_ssl)
+        backbone_arch= train_model_rotate(backbone, type_ssl, learning_rate, device, run, data_train)
 
     elif type_ssl == 'simclr':
 
-        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data)
 
     elif type_ssl == 'byol':
 
-        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data)
 
     else:
 
-        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, epochs, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data)
 
 
     train_simple(epochs=epochs, batch_size=batch_size, folds=4, classify_type=type_ssl, backbone=backbone, backbone_arch=backbone_arch, fold_ssl=path_data)
