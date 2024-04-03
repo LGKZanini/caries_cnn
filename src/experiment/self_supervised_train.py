@@ -254,9 +254,15 @@ def train_model_rotate(backbone, type_ssl, learning_rate, device, run, dataloade
         total_loss = 0
 
         for X_train, y_train in dataloader:
+            
+            print(X_train.shape)
+            print(y_train.shape)
 
             X_train = X_train[:, :1, :, :].to('cuda:'+str(device))
             y_train = y_train.to('cuda:'+str(device))
+
+            print(X_train.shape)
+            print(y_train.shape)
 
             y_predicted = model(X_train)
 
