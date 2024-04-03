@@ -245,7 +245,7 @@ def train_model_rotate(backbone, type_ssl, learning_rate, device, run, dataloade
     model = CNN_simple(backbone_nn, 2048, num_classes=4).to('cuda:'+str(device))
     
     optimizer_adam = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=20, gamma=0.5)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=25, gamma=0.5)
 
     loss_function = nn.CrossEntropyLoss()
 
