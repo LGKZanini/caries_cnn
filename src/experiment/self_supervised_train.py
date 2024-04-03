@@ -242,7 +242,7 @@ def train_model_rotate(backbone, type_ssl, learning_rate, device, run, dataloade
     resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
     backbone_nn = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
 
-    model = CNN_simple(backbone_nn, 2048, num_classes=4)
+    model = CNN_simple(backbone_nn, 2048, num_classes=4).to('cuda:'+str(device))
     
     optimizer_adam = torch.optim.Adam(model.parameters(), lr=learning_rate)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=20, gamma=0.5)
@@ -254,15 +254,9 @@ def train_model_rotate(backbone, type_ssl, learning_rate, device, run, dataloade
         total_loss = 0
 
         for X_train, y_train in dataloader:
-            
-            print(X_train.shape)
-            print(y_train.shape)
-
+        
             X_train = X_train[:, :1, :, :].to('cuda:'+str(device))
             y_train = y_train.to('cuda:'+str(device))
-
-            print(X_train.shape)
-            print(y_train.shape)
 
             y_predicted = model(X_train)
 
