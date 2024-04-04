@@ -198,10 +198,8 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
                 total_loss += loss.detach()
 
                 loss.backward()
-                optimizer_adam.step()
-                optimizer_adam.zero_grad()
-
-            scheduler.step()
+                optimizer.step()
+                optimizer.zero_grad()
 
             avg_loss = total_loss / len(dataloader)
 
