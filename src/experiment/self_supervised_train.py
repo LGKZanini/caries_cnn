@@ -282,7 +282,7 @@ def train_model_rotate(backbone, type_ssl, learning_rate, device, run, dataloade
     run.log_artifact(artifact)
     run.finish()
 
-    return model.backbone
+    return model.cnn
 
 
 def train_ssl(batch_size, epochs, type_ssl, backbone, path_data=None):
