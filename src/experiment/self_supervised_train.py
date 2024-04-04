@@ -146,7 +146,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
     )
     
     optimizer_adam = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=25, gamma=0.5)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=100, gamma=0.5)
 
     if type_ssl == 'byol':
 
