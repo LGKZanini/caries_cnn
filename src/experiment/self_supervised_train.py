@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader # pyright: ignore[reportMissingImports]
 from lightly.loss import NegativeCosineSimilarity, NTXentLoss, VICRegLoss # pyright: ignore[reportMissingImports]
 from lightly.transforms.simclr_transform import SimCLRTransform # pyright: ignore[reportMissingImports]
 from lightly.transforms.vicreg_transform import VICRegTransform # pyright: ignore[reportMissingImports]
-from lightly.data import LightlyDataset # pyright: ignore[reportMissingImports]
+from lightly.data import LightlyDataset, ImageCollateFunction # pyright: ignore[reportMissingImports]
 
 from lightly.models.utils import  update_momentum # pyright: ignore[reportMissingImports]
 from lightly.transforms.byol_transform import ( # pyright: ignore[reportMissingImports]
@@ -18,6 +18,8 @@ from lightly.transforms.byol_transform import ( # pyright: ignore[reportMissingI
     BYOLView1Transform,
     BYOLView2Transform,
 ) # pyright: ignore[reportMissingImports]
+
+from torchvision import transforms # pyright: ignore[reportMissingImports]
 
 from lightly.utils.scheduler import cosine_schedule # pyright: ignore[reportMissingImports]
 
@@ -107,34 +109,32 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
     resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
     backbone_nn = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
 
+    transforms_ssl = transforms.Compose([
+            transforms.RandomResizedCrop(size=224, scale=(0.4, 1.0)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            transforms.RandomGrayscale(p=0.4),
+            transforms.RandomApply([transforms.GaussianBlur(kernel_size=5)], p=0.5),
+            transforms.ToTensor(),
+    ])
+
     if type_ssl == 'byol':
 
         model = BYOL(backbone_nn).to('cuda:'+str(device))
         criterion = NegativeCosineSimilarity()
-
-        transform = BYOLTransform(
-            view_1_transform=BYOLView1Transform(input_size=112, gaussian_blur=0.0, normalize={'mean':(0.5, 0.5, 0.5), 'std':(0.5, 0.5, 0.5)}),
-            view_2_transform=BYOLView2Transform(input_size=112, gaussian_blur=0.0, normalize={'mean':(0.5, 0.5, 0.5), 'std':(0.5, 0.5, 0.5)}),
-        )
         
     elif type_ssl == 'vicreg':
 
         model = VICReg(backbone_nn).to('cuda:'+str(device))
         criterion = VICRegLoss()
-        transform = VICRegTransform(input_size=112, normalize={'mean':(0.5, 0.5, 0.5), 'std':(0.5, 0.5, 0.5)})
 
     else:
 
         model = SimCLR(backbone_nn).to('cuda:'+str(device))
         criterion = NTXentLoss()
-        transform = SimCLRTransform(input_size=112, normalize={'mean':(0.5, 0.5, 0.5), 'std':(0.5, 0.5, 0.5)})
 
-
-    dataset = LightlyDataset(
-        input_dir=path_data,
-        transform=transform
-    )
-
+    collate_fn = ImageCollateFunction(transform=transforms_ssl)
+    dataset = LightlyDataset(input_dir=path_data)
 
     dataloader = torch.utils.data.DataLoader(
         dataset,
@@ -142,7 +142,8 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
         shuffle=True,
         drop_last=True,
         num_workers=8,
-        pin_memory=True
+        pin_memory=True,
+        collate_fn=collate_fn
     )
     
     optimizer = torch.optim.SGD(model.parameters(), lr=0.06)
@@ -179,6 +180,8 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
             print(f"epoch: {epoch:>02}, loss: {avg_loss:.5f}")
 
     else:
+
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0.00001)
             
         for epoch in range(epochs):
 
@@ -204,6 +207,8 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
             avg_loss = total_loss / len(dataloader)
 
             print(f"epoch: {epoch:>02}, loss: {avg_loss:.5f}")
+
+            scheduler.step()
 
 
     torch.save(model.state_dict(), './src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
