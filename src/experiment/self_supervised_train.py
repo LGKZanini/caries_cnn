@@ -99,6 +99,27 @@ def get_model(metrics, learning_rate, device):
         model=model,   
     )
 
+custom_transforms = transforms.Compose([
+    transforms.RandomResizedCrop(size=112, scale=(0.5, 1.0)),  # Permitindo recortes menores
+    transforms.RandomRotation(degrees=(-20, 20)),  # Adicionando rotação aleatória
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomVerticalFlip(p=0.5),
+    transforms.RandomGrayscale(p=0.4),
+    transforms.RandomApply([transforms.GaussianBlur(kernel_size=3)], p=0.5),
+    transforms.ToTensor(),
+])
+
+def custom_collate_fn(batch):
+
+    # `batch` é uma lista de pares (imagem, label)
+    imgs, labels, outro_campo = zip(*batch)
+    
+    # Aplica as transformações duas vezes em cada imagem para criar duas vistas
+    views_1 = torch.stack([custom_transforms(img) for img in imgs])
+    views_2 = torch.stack([custom_transforms(img) for img in imgs])
+    
+    return views_1, views_2, labels
+
 
 def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data):
 
@@ -108,15 +129,6 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
     resnet50 = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
     resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
     backbone_nn = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
-
-    transforms_ssl = transforms.Compose([
-            transforms.RandomResizedCrop(size=224, scale=(0.4, 1.0)),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomVerticalFlip(),
-            transforms.RandomGrayscale(p=0.4),
-            transforms.RandomApply([transforms.GaussianBlur(kernel_size=5)], p=0.5),
-            transforms.ToTensor(),
-    ])
 
     if type_ssl == 'byol':
 
@@ -133,17 +145,16 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
         model = SimCLR(backbone_nn).to('cuda:'+str(device))
         criterion = NTXentLoss()
 
-    collate_fn = ImageCollateFunction(transform=transforms_ssl)
     dataset = LightlyDataset(input_dir=path_data)
 
-    dataloader = torch.utils.data.DataLoader(
+    dataloader = DataLoader(
         dataset,
         batch_size=batch_size,
         shuffle=True,
         drop_last=True,
         num_workers=8,
         pin_memory=True,
-        collate_fn=collate_fn
+        collate_fn=custom_collate_fn
     )
     
     optimizer = torch.optim.SGD(model.parameters(), lr=0.06)
