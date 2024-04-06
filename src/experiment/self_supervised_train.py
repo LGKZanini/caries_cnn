@@ -168,7 +168,8 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
 
             for batch in dataloader:
 
-                x0, x1 = batch[0]
+                x0 = batch[0]
+                x1 = batch[1]
 
                 x0 = x0[:, :1, :, :].to('cuda:'+str(device))
                 x1 = x1[:, :1, :, :].to('cuda:'+str(device))
@@ -200,7 +201,8 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
 
             for batch in dataloader:
 
-                x0, x1 = batch[0]
+                x0 = batch[0]
+                x1 = batch[1]
 
                 x0 = x0[:, :1, :, :].to('cuda:'+str(device))
                 x1 = x1[:, :1, :, :].to('cuda:'+str(device))
