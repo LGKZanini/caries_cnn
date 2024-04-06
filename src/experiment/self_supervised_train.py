@@ -100,8 +100,9 @@ def get_model(metrics, learning_rate, device):
     )
 
 custom_transforms = transforms.Compose([
-    transforms.RandomResizedCrop(size=112, scale=(0.5, 1.0)),  # Permitindo recortes menores
-    transforms.RandomRotation(degrees=(-20, 20)),  # Adicionando rotação aleatória
+    transforms.RandomResizedCrop(size=112, scale=(0.5, 1.0)),
+    transforms.RandomAffine(degrees=10, translate=(0.1, 0.1), scale=(0.9, 1.1), shear=10),
+    transforms.ColorJitter(brightness=0.2, contrast=0.1, saturation=0.1),
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomVerticalFlip(p=0.5),
     transforms.RandomGrayscale(p=0.4),
@@ -193,7 +194,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
 
     else:
 
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0.00001)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=25, gamma=0.5)
             
         for epoch in range(epochs):
 
