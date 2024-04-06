@@ -47,7 +47,7 @@ def make_data(path_data, batch_size):
     return train_data
 
 
-def configure_setup(epochs, batch_size, name):
+def configure_setup(epochs, batch_size, name, path_data):
 
     api_key = os.getenv('WANDB_API_KEY')    
 
@@ -61,6 +61,7 @@ def configure_setup(epochs, batch_size, name):
             "epochs": epochs,
             "batch_size": batch_size,
             "learning_rate_init": 0.01, 
+            "path_data": path_data,
         }
     )
 
@@ -301,7 +302,7 @@ def train_model_rotate(backbone, type_ssl, learning_rate, device, run, dataloade
 
 def train_ssl(batch_size, epochs, type_ssl, backbone, path_data=None):
     
-    run = configure_setup(epochs, batch_size, type_ssl)
+    run = configure_setup(epochs, batch_size, type_ssl, path_data)
     device = os.getenv('gpu')
     learning_rate = 0.01
 
