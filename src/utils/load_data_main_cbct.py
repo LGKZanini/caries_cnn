@@ -108,8 +108,8 @@ def create_train_test(fold, fold_ssl=None):
 
     if fold_ssl is None:
 
-        train = np.load(path_load+'train'+str(fold)+'.npy', allow_pickle=True)
-        test = np.load(path_load+'test'+str(fold)+'.npy', allow_pickle=True)
+        train = np.load(path_load+'train'+str(fold)+'_org.npy', allow_pickle=True)
+        test = np.load(path_load+'test'+str(fold)+'_org.npy', allow_pickle=True)
 
     else:
         

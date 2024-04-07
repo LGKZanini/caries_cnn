@@ -55,7 +55,7 @@ def create_model(backbone, device, backbone_arch=None):
 
         if backbone_arch is None:
 
-            resnet18 = models.resnet18(pretrained=True)
+            resnet18 = models.resnet18()
             resnet18.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
             resnet18_conv = nn.Sequential(*list(resnet18.children())[:-1]).to('cuda:'+str(device))
 
@@ -70,7 +70,7 @@ def create_model(backbone, device, backbone_arch=None):
         
         if backbone_arch is None:
 
-            resnet50 = models.resnet50(pretrained=True)
+            resnet50 = models.resnet50()
             resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
             resnet50_conv = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
 
@@ -84,7 +84,7 @@ def create_model(backbone, device, backbone_arch=None):
 
         if backbone_arch is None:
             
-            densenet121 = models.densenet121(pretrained=True)
+            densenet121 = models.densenet121()
             densenet121.features.conv0 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
             densenet121_conv = densenet121.features
             densenet121_conv.add_module('global_average_pooling', nn.AdaptiveAvgPool2d((1, 1)))
