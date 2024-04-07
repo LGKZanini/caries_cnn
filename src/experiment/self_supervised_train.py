@@ -195,7 +195,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
 
     else:
 
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=25, gamma=0.5)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=25, T_mult=1, eta_min=0)
             
         for epoch in range(epochs):
 
