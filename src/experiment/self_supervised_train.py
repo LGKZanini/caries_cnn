@@ -81,7 +81,7 @@ def get_model_raw():
 
 def get_model(metrics, learning_rate, device):
 
-    resnet = models.resnet50()
+    resnet = models.resnet18()
     backbone_nn = nn.Sequential(*list(resnet.children())[:-1])
 
     model =  CNN_simple(cnn=backbone_nn, input_nn=2048, num_classes=5).to('cuda:'+str(device))
