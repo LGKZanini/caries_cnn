@@ -18,6 +18,8 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     api_key = os.getenv('WANDB_API_KEY')
     
     wandb.login(key=api_key)
+
+    original_state = None if backbone_arch is None else backbone_arch.state_dict()
     
     for fold in range(1, 6):
 
@@ -43,14 +45,14 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
         train_data = DataLoader(dataset_train, batch_size=batch_size, num_workers=8, shuffle=True, pin_memory=True, drop_last=True)
         val_data = DataLoader(dataset_val, batch_size=batch_size, num_workers=8, shuffle=True, pin_memory=True, drop_last=False)
         
-        if classify_type is None :
+        if backbone_arch is None :
 
             model = create_model(backbone, device)
             
         else:
-
+            
+            backbone_arch.load_state_dict(original_state)
             model = create_model(backbone, device, backbone_arch=backbone_arch)
-
 
         loss_function = nn.CrossEntropyLoss()
         

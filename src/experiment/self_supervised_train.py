@@ -302,7 +302,7 @@ def train_ssl(batch_size, epochs, type_ssl, backbone, path_data=None):
     
     run = configure_setup(epochs, batch_size, type_ssl, path_data)
     device = os.getenv('gpu')
-    learning_rate = 0.01
+    learning_rate = 0.001
 
     if type_ssl == 'rotate':
 
