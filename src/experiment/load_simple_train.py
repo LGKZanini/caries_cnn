@@ -24,7 +24,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
         run = wandb.init(
             project="caries_cnn_simple",
             entity='luizzanini',
-            name='classify_'+backbone+'_'+str(classify_type)+'_'+str(fold),
+            name='classify_'+backbone+'_'+str(classify_type)+'_'+str(fold)+'_'+str(fold_ssl),
             config = { 
                 "folds": fold,
                 "epochs": epochs,
@@ -35,7 +35,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
             }
         )
         
-        data_train, data_test = create_train_test(fold)
+        data_train, data_test = create_train_test(fold, fold_ssl=fold_ssl)
 
         dataset_train = ToothData(data_train)
         dataset_val = ToothData(data_test)
@@ -77,9 +77,5 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
         
         run.log_artifact(artifact)
         run.finish()
-
-        if fold_ssl is not None:
-
-            return
     
     return

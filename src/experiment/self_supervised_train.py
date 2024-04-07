@@ -101,9 +101,8 @@ def get_model(metrics, learning_rate, device):
     )
 
 custom_transforms = transforms.Compose([
-    transforms.RandomResizedCrop(size=112, scale=(0.5, 1.0)),
+    transforms.RandomResizedCrop(size=112, scale=(0.6, 1.0)),
     transforms.RandomAffine(degrees=10, translate=(0.1, 0.1), scale=(0.9, 1.1), shear=10),
-    transforms.ColorJitter(brightness=0.2, contrast=0.1, saturation=0.1),
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomVerticalFlip(p=0.5),
     transforms.RandomGrayscale(p=0.4),
@@ -123,7 +122,7 @@ def custom_collate_fn(batch):
     return views_1, views_2, labels
 
 
-def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data):
+def train_model_lighty(backbone, type_ssl, device, run, path_data):
 
     batch_size = int(os.getenv('BATCH_SIZE_SSL', '128'))
     epochs = int(os.getenv('EPOCHS_SSL', '500'))
@@ -195,7 +194,7 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
 
     else:
 
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=25, T_mult=1, eta_min=0)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=50, T_mult=1, eta_min=0)
             
         for epoch in range(epochs):
 
@@ -224,7 +223,6 @@ def train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data
             print(f"epoch: {epoch:>02}, loss: {avg_loss:.5f}")
 
             scheduler.step()
-
 
     torch.save(model.state_dict(), './src/models/cnn_ssl_'+type_ssl+'_'+backbone+'_.pth')
     artifact = wandb.Artifact(type_ssl, type='model')
@@ -314,15 +312,15 @@ def train_ssl(batch_size, epochs, type_ssl, backbone, path_data=None):
 
     elif type_ssl == 'simclr':
 
-        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, device, run, path_data)
 
     elif type_ssl == 'byol':
 
-        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, device, run, path_data)
 
     else:
 
-        backbone_arch = train_model_lighty(backbone, type_ssl, learning_rate, device, run, path_data)
+        backbone_arch = train_model_lighty(backbone, type_ssl, device, run, path_data)
 
 
     train_simple(epochs=epochs, batch_size=batch_size, folds=4, classify_type=type_ssl, backbone=backbone, backbone_arch=backbone_arch, fold_ssl=path_data)
