@@ -34,7 +34,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     for fold in range(1, 6):
 
         run = wandb.init(
-            project="caries_cnn_simple_v2",
+            project="caries_cnn_simple_test",
             entity='luizzanini',
             name='classify_'+backbone+'_'+str(classify_type)+'_'+str(fold)+'_'+str(fold_ssl),
             config = { 
@@ -61,11 +61,11 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
             
         else:
             
-            print("Soma dos pesos antes de carregar o estado:", backbone_arch.layer.weight.sum().item())
+            print("Soma dos pesos antes de carregar o estado:", backbone_arch.conv1.weight.sum().item())
 
             backbone_arch.load_state_dict(original_state)
 
-            print("Soma dos pesos após carregar o estado:", backbone_arch.layer.weight.sum().item())
+            print("Soma dos pesos após carregar o estado:", backbone_arch.conv1.weight.sum().item())
 
             model = create_model(backbone, device, backbone_arch=backbone_arch)
 
