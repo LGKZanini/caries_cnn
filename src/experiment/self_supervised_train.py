@@ -127,7 +127,7 @@ def train_model_lighty(backbone, type_ssl, device, run, path_data):
     batch_size = int(os.getenv('BATCH_SIZE_SSL', '128'))
     epochs = int(os.getenv('EPOCHS_SSL', '500'))
 
-    resnet50 = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+    resnet50 = models.resnet18(weights=models.ResNet50_Weights.DEFAULT)
     resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
     backbone_nn = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
 
@@ -255,7 +255,7 @@ def train_model_rotate(backbone, type_ssl, learning_rate, device, run, dataloade
     resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
     backbone_nn = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
 
-    model = CNN_simple(backbone_nn, 2048, num_classes=4).to('cuda:'+str(device))
+    model = CNN_simple(backbone_nn, input_nn=512, num_classes=4).to('cuda:'+str(device))
     
     optimizer_adam = torch.optim.Adam(model.parameters(), lr=learning_rate)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer_adam, step_size=25, gamma=0.5)
