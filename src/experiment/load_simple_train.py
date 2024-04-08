@@ -28,13 +28,13 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     
     else: 
         
-        original_state =None
+        original_state = None
 
     
     for fold in range(1, 6):
 
         run = wandb.init(
-            project="caries_cnn_simple_test",
+            project="caries_cnn_simple_not_pretrained",
             entity='luizzanini',
             name='classify_'+backbone+'_'+str(classify_type)+'_'+str(fold)+'_'+str(fold_ssl),
             config = { 
