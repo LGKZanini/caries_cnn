@@ -61,11 +61,11 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
             
         else:
             
-            print("Soma dos pesos antes de carregar o estado:", backbone_arch.conv1.weight.sum().item())
+            print("Soma dos pesos antes de carregar o estado:", backbone_arch[0].weight.sum().item())
 
             backbone_arch.load_state_dict(original_state)
 
-            print("Soma dos pesos após carregar o estado:", backbone_arch.conv1.weight.sum().item())
+            print("Soma dos pesos após carregar o estado:", backbone_arch[0].weight.sum().item())
 
             model = create_model(backbone, device, backbone_arch=backbone_arch)
 
