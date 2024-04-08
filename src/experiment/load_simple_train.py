@@ -24,7 +24,7 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     for fold in range(1, 6):
 
         run = wandb.init(
-            project="caries_cnn_simple",
+            project="caries_cnn_simple_v2",
             entity='luizzanini',
             name='classify_'+backbone+'_'+str(classify_type)+'_'+str(fold)+'_'+str(fold_ssl),
             config = { 
