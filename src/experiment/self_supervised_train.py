@@ -308,7 +308,7 @@ def train_ssl(batch_size, epochs, type_ssl, backbone, path_data=None):
 
         data_train = make_data(path_data, batch_size)
         
-        backbone_arch= train_model_rotate(backbone, type_ssl, learning_rate, device, run, data_train)
+        backbone_arch = train_model_rotate(backbone, type_ssl, learning_rate, device, run, data_train)
 
     elif type_ssl == 'simclr':
 

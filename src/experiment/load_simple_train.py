@@ -1,4 +1,7 @@
 import os
+
+from copy import deepcopy
+
 import wandb # pyright: ignore[reportMissingImports]
 import torch # pyright: ignore[reportMissingImports]
 
@@ -19,7 +22,14 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
     
     wandb.login(key=api_key)
 
-    original_state = None if backbone_arch is None else backbone_arch.state_dict()
+    if backbone_arch is not None:
+
+        original_state = deepcopy(backbone_arch.state_dict())
+    
+    else: 
+        
+        original_state =None
+
     
     for fold in range(1, 6):
 
@@ -51,13 +61,18 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
             
         else:
             
+            print("Soma dos pesos antes de carregar o estado:", backbone_arch.layer.weight.sum().item())
+
             backbone_arch.load_state_dict(original_state)
+
+            print("Soma dos pesos após carregar o estado:", backbone_arch.layer.weight.sum().item())
+
             model = create_model(backbone, device, backbone_arch=backbone_arch)
 
         loss_function = nn.CrossEntropyLoss()
         
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.5)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=25, gamma=0.5)
 
         train_cnn = Trainer(
             get_metrics=metrics_caries_icdas, 
@@ -70,9 +85,9 @@ def train_simple(batch_size, epochs, folds=5, classify_type=None, backbone='resn
         
         train_cnn.train_epochs(train_data=train_data, val_data=val_data, epochs=epochs)
         
-        model = train_cnn.model
+        model_save = train_cnn.model
         
-        torch.save(model.state_dict(), './src/models/cnn_ssl_'+str(classify_type)+'_'+str(backbone)+'.pth')
+        torch.save(model_save.state_dict(), './src/models/cnn_ssl_'+str(classify_type)+'_'+str(backbone)+'.pth')
 
         artifact = wandb.Artifact('classify_'+str(classify_type)+'_'+str(backbone)+'_'+str(fold), type='model')
         artifact.add_file('./src/models/cnn_ssl_'+str(classify_type)+'_'+str(backbone)+'.pth')
