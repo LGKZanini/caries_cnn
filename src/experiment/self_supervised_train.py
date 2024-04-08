@@ -251,7 +251,7 @@ def train_model_rotate(backbone, type_ssl, learning_rate, device, run, dataloade
 
     epochs = int(os.getenv('EPOCHS_SSL', '500'))
 
-    resnet50 = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
+    resnet50 = models.resnet18()
     resnet50.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
     backbone_nn = nn.Sequential(*list(resnet50.children())[:-1]).to('cuda:'+str(device))
 
